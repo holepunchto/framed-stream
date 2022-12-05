@@ -1,0 +1,118 @@
+const { Duplex } = require('streamx')
+const b4a = require('b4a')
+
+module.exports = class FramedStream extends Duplex {
+  constructor (stream, { bits = 32, __name = '' } = {}) {
+    super()
+
+    this.stream = stream
+    this.frameBits = bits
+    this.frameBytes = this.frameBits / 8
+    this.__name = __name
+
+    this._factor = 0
+    this._missingBytes = 0
+    this._message = null
+    this._writeCallback = null
+
+    stream.on('data', this._ondata.bind(this))
+    stream.on('end', this._onend.bind(this))
+    stream.on('drain', this._ondrain.bind(this))
+  }
+
+  _predestroy () {
+    console.log(this.__name, '_predestroy')
+    this._writeContinue(new Error('Destroyed'))
+  }
+
+  _read (cb) {
+    this.stream.resume() // restart state machine
+    cb(null)
+  }
+
+  _write (data, cb) {
+    const wrap = this._frame(data.byteLength)
+    wrap.set(data, this.frameBytes)
+
+    if (this.stream.write(wrap) === true) return cb(null)
+    this._writeCallback = cb
+  }
+
+  _writeContinue (err) {
+    const cb = this._writeCallback
+    this._writeCallback = null
+    if (cb !== null) cb(err)
+  }
+
+  _frame (len) {
+    const wrap = b4a.allocUnsafe(len + this.frameBytes)
+
+    for (let i = 0; i < this.frameBytes; i++) {
+      wrap[i] = len
+      len >>>= 8
+    }
+
+    return wrap
+  }
+
+  _ondrain () {
+    this._writeContinue(null)
+  }
+
+  _ondata (data) {
+    let read = 0
+
+    while (read < data.byteLength) {
+      if (this._factor < this.frameBits) {
+        const byte = data[read++]
+        this._missingBytes += (1 << this._factor) * byte
+        this._factor += 8
+
+        if (this._factor === this.frameBits) {
+          if (data.byteLength - read >= this._missingBytes) { // quick check if we can avoid a copy
+            this._push(data.subarray(read, read += this._missingBytes))
+          } else { // otherwise make a buffer to read into
+            this._message = b4a.allocUnsafe(this._missingBytes)
+          }
+        }
+
+        continue
+      }
+
+      this._message.set(data.subarray(read, read += this._missingBytes), this._message.byteLength - this._missingBytes)
+
+      if (read > data.byteLength) {
+        this._missingBytes -= data.byteLength
+        return
+      }
+
+      this._push(this._message)
+    }
+  }
+
+  _push (message) {
+    this._factor = 0
+    this._missingBytes = 0
+    this._message = null
+
+    // pause state machine if our buffer is full
+    if (this.push(message) === false) this.stream.pause()
+  }
+
+  _onend () {
+    console.log(this.__name, '_onend')
+    // this.stream.end()
+    this.push(null)
+  }
+
+  _final (cb) {
+    console.log(this.__name, '_final')
+    this.stream.end()
+    // this.push(null)
+    cb(null)
+  }
+}
+
+function map (s) {
+  return typeof s === 'string' ? b4a.from(s) : s
+}

@@ -1,0 +1,28 @@
+{
+  "name": "framed-socket",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard && brittle test.js",
+    "lint": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/holepunchto/framed-socket.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/holepunchto/framed-socket/issues"
+  },
+  "homepage": "https://github.com/holepunchto/framed-socket",
+  "dependencies": {
+    "b4a": "^1.6.1",
+    "streamx": "^2.12.5"
+  },
+  "devDependencies": {
+    "brittle": "^3.1.0",
+    "standard": "^17.0.0"
+  }
+}
