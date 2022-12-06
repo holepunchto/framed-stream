@@ -31,16 +31,19 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _write (data, cb) {
+    // console.log(this.__name, '_write', data.length)
     const wrap = this._frame(data.byteLength)
     wrap.set(data, this.frameBytes)
 
     if (this.rawStream.write(wrap) === true) return cb(null)
+    // console.log(this.__name, '_write backpressure?')
     this._writeCallback = cb
   }
 
   _writeContinue (err) {
     const cb = this._writeCallback
     this._writeCallback = null
+    // console.log(this.__name, '_writeContinue', !!cb)
     if (cb !== null) cb(err)
   }
 
