@@ -306,7 +306,7 @@ test('several partial message content', function (t) {
   setTimeout(() => b.rawStream.write(message.slice(6)), 200)
 })
 
-test.solo('multiple messages at once', function (t) {
+test('multiple messages at once', function (t) {
   t.plan(8)
 
   const [a, b] = create()
