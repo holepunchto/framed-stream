@@ -96,8 +96,8 @@ test.solo('write message length, but delay partial message content', function (t
   })
 
   a.on('end', function () {
-    a.end()
     t.pass('a end')
+    a.end()
   })
 
   a.on('close', function () {
