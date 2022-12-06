@@ -47,7 +47,7 @@ test('basic', async function (t) {
 
   b.on('end', function () {
     t.pass('b end')
-    b.end()
+    // b.end()
   })
 
   b.on('close', function () {
