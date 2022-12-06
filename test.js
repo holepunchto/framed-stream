@@ -1,9 +1,5 @@
 const test = require('brittle')
-const path = require('path')
-const fs = require('fs')
-const fsp = require('fs/promises')
 const FramedStream = require('./index.js')
-// const net = require('net')
 const duplexThrough = require('duplex-through')
 const b4a = require('b4a')
 
@@ -71,51 +67,3 @@ function create () {
 
   return [a, b]
 }
-
-/* async function create (t) {
-  const server = net.createServer({ allowHalfOpen: true })
-  const onconnection = new Promise(resolve => server.once('connection', resolve))
-  server.listen(0)
-  await waitForServer(server)
-
-  t.teardown(() => {
-    server.close()
-    return new Promise(resolve => server.once('close', resolve))
-  })
-
-  const local = net.connect(server.address().port, server.address().address, { allowHalfOpen: true })
-  const remote = await onconnection
-
-  local.setNoDelay()
-  remote.setNoDelay()
-
-  server.once('connection', function () {
-    t.fail('Socket already existed (another socket connected)')
-  })
-
-  const a = new FramedStream(local, { __name: 'a' })
-  const b = new FramedStream(remote, { __name: 'b' })
-
-  return [local, remote, a, b]
-}
-
-function waitForServer (server) {
-  return new Promise((resolve, reject) => {
-    server.on('listening', done)
-    server.on('error', done)
-    if (server.listening) done()
-
-    function done (error) {
-      server.removeListener('listening', done)
-      server.removeListener('error', done)
-      error ? reject(error) : resolve()
-    }
-  })
-}
-
-function createTmpDir (t) {
-  const tmpdir = path.join(os.tmpdir(), 'localdrive-test-')
-  const dir = fs.mkdtempSync(tmpdir)
-  t.teardown(() => fsp.rm(dir, { recursive: true }))
-  return dir
-} */
