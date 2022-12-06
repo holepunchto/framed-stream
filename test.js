@@ -377,7 +377,7 @@ test('multiple messages at once', function (t) {
   b.rawStream.write(b4a.concat([message1, message2, message3]))
 })
 
-test.skip('big message', function (t) {
+test('big message', function (t) {
   t.plan(6)
 
   const [a, b] = create()
