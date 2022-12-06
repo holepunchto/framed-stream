@@ -80,10 +80,11 @@ module.exports = class FramedStream extends Duplex {
         continue
       }
 
-      this._message.set(data.subarray(read, read += this._missingBytes), this._message.byteLength - this._missingBytes)
+      const chunk = data.subarray(read, read += this._missingBytes)
+      this._message.set(chunk, this._message.byteLength - this._missingBytes)
 
       if (read > data.byteLength) {
-        this._missingBytes -= data.byteLength
+        this._missingBytes -= chunk.length
         return
       }
 
