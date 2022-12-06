@@ -21,7 +21,7 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _predestroy () {
-    console.log(this.__name, '_predestroy')
+    // console.log(this.__name, '_predestroy')
     this._writeContinue(new Error('Destroyed'))
   }
 
