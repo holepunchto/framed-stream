@@ -535,6 +535,62 @@ test('end while the other stream is still receiving data', function (t) {
   setTimeout(() => b.end(), 100)
 })
 
+test('the receiving stream ends while still receiving data', function (t) {
+  t.plan(5)
+
+  const [a, b] = create()
+
+  a.rawStream.once('data', function (raw) {
+    t.alike(raw, b4a.concat([b4a.from([11, 0, 0, 0]), b4a.from('he')]), 'a first raw data')
+
+    a.rawStream.once('data', function () {
+      t.fail('a should not receive more raw data')
+    })
+  })
+
+  b.rawStream.on('data', function () {
+    t.fail('b should not receive raw data')
+  })
+
+  a.once('data', function (data) {
+    t.fail('a should not receive messages')
+  })
+
+  a.on('end', function () {
+    t.fail('a should not receive end')
+  })
+
+  a.on('close', function () {
+    t.pass('a closed')
+  })
+
+  a.on('error', function (error) {
+    t.is(error.message, 'Stream interrupted', 'a: ' + error.message)
+  })
+
+  b.once('data', function () {
+    t.fail('b should not receive messages')
+  })
+
+  b.on('end', function () {
+    t.pass('b end')
+    b.end()
+  })
+
+  b.on('close', function () {
+    t.pass('b closed')
+  })
+
+  b.on('error', function (error) {
+    t.is(error.message, 'Pair was destroyed', 'b: ' + error.message)
+  })
+
+  const message = frame(b, b4a.from('hello world'))
+  b.rawStream.write(message.slice(0, 6))
+
+  setTimeout(() => a.end(), 100)
+})
+
 test('destroy', function (t) {
   t.plan(2)
 
