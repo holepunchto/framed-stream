@@ -2,10 +2,10 @@ const { Duplex } = require('streamx')
 const b4a = require('b4a')
 
 module.exports = class FramedStream extends Duplex {
-  constructor (stream, { bits = 32, __name = '' } = {}) {
+  constructor (rawStream, { bits = 32, __name = '' } = {}) {
     super({ mapWritable })
 
-    this.stream = stream
+    this.rawStream = rawStream
     this.frameBits = bits
     this.frameBytes = this.frameBits / 8
     this.__name = __name
@@ -15,9 +15,9 @@ module.exports = class FramedStream extends Duplex {
     this._message = null
     this._writeCallback = null
 
-    stream.on('data', this._ondata.bind(this))
-    stream.on('end', this._onend.bind(this))
-    stream.on('drain', this._ondrain.bind(this))
+    rawStream.on('data', this._ondata.bind(this))
+    rawStream.on('end', this._onend.bind(this))
+    rawStream.on('drain', this._ondrain.bind(this))
   }
 
   _predestroy () {
@@ -26,7 +26,7 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _read (cb) {
-    this.stream.resume() // restart state machine
+    this.rawStream.resume() // restart state machine
     cb(null)
   }
 
@@ -34,7 +34,7 @@ module.exports = class FramedStream extends Duplex {
     const wrap = this._frame(data.byteLength)
     wrap.set(data, this.frameBytes)
 
-    if (this.stream.write(wrap) === true) return cb(null)
+    if (this.rawStream.write(wrap) === true) return cb(null)
     this._writeCallback = cb
   }
 
@@ -99,18 +99,18 @@ module.exports = class FramedStream extends Duplex {
     this._message = null
 
     // pause state machine if our buffer is full
-    if (this.push(message) === false) this.stream.pause()
+    if (this.push(message) === false) this.rawStream.pause()
   }
 
   _onend () {
     // console.log(this.__name, '_onend')
-    // this.stream.end()
+    // this.rawStream.end()
     this.push(null)
   }
 
   _final (cb) {
     // console.log(this.__name, '_final')
-    this.stream.end()
+    this.rawStream.end()
     // this.push(null)
     cb(null)
   }
