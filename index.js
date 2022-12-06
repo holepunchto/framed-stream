@@ -18,11 +18,14 @@ module.exports = class FramedStream extends Duplex {
     rawStream.on('data', this._ondata.bind(this))
     rawStream.on('end', this._onend.bind(this))
     rawStream.on('drain', this._ondrain.bind(this))
+    rawStream.on('error', this._onerror.bind(this))
   }
 
   _predestroy () {
     // console.log(this.__name, '_predestroy')
-    this._writeContinue(new Error('Destroyed'))
+    this.rawStream.destroy(new Error('Destroyed'))
+
+    if (this._writeCallback) this._writeContinue(new Error('Destroyed'))
   }
 
   _read (cb) {
@@ -62,11 +65,16 @@ module.exports = class FramedStream extends Duplex {
     this._writeContinue(null)
   }
 
+  _onerror (err) {
+    // console.log(this.__name, 'rawStream error', err.message)
+    this.destroy(err)
+  }
+
   _ondata (data) {
     // console.log(this.__name, '_ondata', data)
     let read = 0
 
-    while (read < data.byteLength) {
+    while (read < data.byteLength && !this.destroying) {
       if (this._factor < this.frameBits) {
         const byte = data[read++]
         this._missingBytes += (1 << this._factor) * byte
@@ -113,6 +121,9 @@ module.exports = class FramedStream extends Duplex {
 
   _final (cb) {
     // console.log(this.__name, '_final')
+
+    if (this._factor) return cb(new Error('Stream interrupted'))
+
     this.rawStream.end()
     cb(null)
   }
