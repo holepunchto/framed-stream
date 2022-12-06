@@ -48,7 +48,7 @@ test('full cycle', function (t) {
   })
 
   b.once('data', function () {
-    t.fail('b should not receive data')
+    t.fail('b should not receive messages')
   })
 
   b.on('end', function () {
@@ -109,7 +109,7 @@ test('partial message length', function (t) {
   })
 
   b.once('data', function () {
-    t.fail('b should not receive data')
+    t.fail('b should not receive messages')
   })
 
   b.on('end', function () {
@@ -168,7 +168,7 @@ test('delay message content', function (t) {
   })
 
   b.once('data', function () {
-    t.fail('b should not receive data')
+    t.fail('b should not receive messages')
   })
 
   b.on('end', function () {
@@ -226,7 +226,7 @@ test('delay partial message content', function (t) {
   })
 
   b.once('data', function () {
-    t.fail('b should not receive data')
+    t.fail('b should not receive messages')
   })
 
   b.on('end', function () {
@@ -288,7 +288,7 @@ test('several partial message content', function (t) {
   })
 
   b.once('data', function () {
-    t.fail('b should not receive data')
+    t.fail('b should not receive messages')
   })
 
   b.on('end', function () {
@@ -359,7 +359,7 @@ test('multiple messages at once', function (t) {
   })
 
   b.once('data', function () {
-    t.fail('b should not receive data')
+    t.fail('b should not receive messages')
   })
 
   b.on('end', function () {
@@ -421,7 +421,7 @@ test('big message', function (t) {
   })
 
   b.once('data', function () {
-    t.fail('b should not receive data')
+    t.fail('b should not receive messages')
   })
 
   b.on('end', function () {
@@ -465,7 +465,7 @@ test('write a string', function (t) {
   })
 
   b.once('data', function () {
-    t.fail('b should not receive data')
+    t.fail('b should not receive messages')
   })
 
   b.on('end', function () {
