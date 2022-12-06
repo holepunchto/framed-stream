@@ -3,7 +3,7 @@ const FramedStream = require('./index.js')
 const duplexThrough = require('duplex-through')
 const b4a = require('b4a')
 
-test('basic', async function (t) {
+test('basic', function (t) {
   t.plan(8)
 
   const [a, b] = create(t)
