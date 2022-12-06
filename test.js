@@ -75,7 +75,7 @@ test.solo('write message length, but delay partial message content', function (t
       t.alike(raw, b4a.from('llo world'), 'a second raw data')
 
       a.rawStream.once('data', function () {
-        t.fail()
+        t.fail('a should not receive more raw data')
       })
     })
   })
