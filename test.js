@@ -365,23 +365,6 @@ test('big message', function (t) {
   b.write(bigMessage)
 })
 
-test('destroy', function (t) {
-  t.plan(2)
-
-  const [a, b] = create()
-
-  a.on('close', function () {
-    t.pass('a closed')
-  })
-
-  b.on('close', function () {
-    t.pass('b closed')
-  })
-
-  a.destroy()
-  b.destroy() // + should not be needed?
-})
-
 test('write a string', function (t) {
   t.plan(6)
 
@@ -424,6 +407,23 @@ test('write a string', function (t) {
   })
 
   b.write('hello')
+})
+
+test('destroy', function (t) {
+  t.plan(2)
+
+  const [a, b] = create()
+
+  a.on('close', function () {
+    t.pass('a closed')
+  })
+
+  b.on('close', function () {
+    t.pass('b closed')
+  })
+
+  a.destroy()
+  b.destroy() // + should not be needed?
 })
 
 function frame (stream, data) {
