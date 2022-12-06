@@ -306,7 +306,78 @@ test('several partial message content', function (t) {
   setTimeout(() => b.rawStream.write(message.slice(6)), 200)
 })
 
-test('big message', function (t) {
+test.solo('multiple messages at once', function (t) {
+  t.plan(8)
+
+  const [a, b] = create()
+
+  a.rawStream.once('data', function (raw) {
+    t.alike(
+      raw,
+      b4a.concat([
+        b4a.from([5, 0, 0, 0]), b4a.from('hello'),
+        b4a.from([3, 0, 0, 0]), b4a.from('bye'),
+        b4a.from([6, 0, 0, 0]), b4a.from('random')
+      ]),
+      'a first raw data'
+    )
+
+    a.rawStream.once('data', function () {
+      t.fail('a should not receive more raw data')
+    })
+  })
+
+  b.rawStream.on('data', function () {
+    t.fail('b should not receive raw data')
+  })
+
+  a.once('data', function (data) {
+    t.alike(data, b4a.from('hello'), 'a first message')
+
+    a.once('data', function (data) {
+      t.alike(data, b4a.from('bye'), 'a second message')
+
+      a.once('data', function (data) {
+        t.alike(data, b4a.from('random'), 'a third message')
+
+        a.once('data', function () {
+          t.fail('a should not receive more messages')
+        })
+
+        a.end()
+      })
+    })
+  })
+
+  a.on('end', function () {
+    t.pass('a end')
+    // a.end()
+  })
+
+  a.on('close', function () {
+    t.pass('a closed')
+  })
+
+  b.once('data', function () {
+    t.fail('b should not receive data')
+  })
+
+  b.on('end', function () {
+    t.pass('b end')
+    b.end()
+  })
+
+  b.on('close', function () {
+    t.pass('b closed')
+  })
+
+  const message1 = frame(b, b4a.from('hello'))
+  const message2 = frame(b, b4a.from('bye'))
+  const message3 = frame(b, b4a.from('random'))
+  b.rawStream.write(b4a.concat([message1, message2, message3]))
+})
+
+test.skip('big message', function (t) {
   t.plan(6)
 
   const [a, b] = create()
