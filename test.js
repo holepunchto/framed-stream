@@ -66,7 +66,7 @@ test('basic', function (t) {
 })
 
 test('write message length, but delay partial message content', function (t) {
-  t.plan(8)
+  t.plan(7)
 
   const [a, b] = create()
 
@@ -87,7 +87,6 @@ test('write message length, but delay partial message content', function (t) {
   })
 
   a.once('data', function (data) {
-    t.is(data.toString(), 'hello world', 'a first message')
     t.alike(data, b4a.from('hello world'), 'a first message')
 
     a.once('data', function () {
