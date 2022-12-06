@@ -33,6 +33,8 @@ test('basic', function (t) {
       a.once('data', function () {
         t.fail('a should not receive more messages')
       })
+
+      // a.end()
     })
   })
 
@@ -63,7 +65,7 @@ test('basic', function (t) {
   b.end()
 })
 
-test.solo('write message length, but delay partial message content', function (t) {
+test('write message length, but delay partial message content', function (t) {
   t.plan(8)
 
   const [a, b] = create()
@@ -92,12 +94,12 @@ test.solo('write message length, but delay partial message content', function (t
       t.fail('a should not receive more messages')
     })
 
-    // a.end()
+    a.end()
   })
 
   a.on('end', function () {
     t.pass('a end')
-    a.end()
+    // a.end()
   })
 
   a.on('close', function () {
@@ -118,24 +120,13 @@ test.solo('write message length, but delay partial message content', function (t
   })
 
   const message = frame(b, b4a.from('hello world'))
-  const firstHalf = message.slice(0, 6)
-  const secondHalf = message.slice(6)
-  console.log('firstHalf', firstHalf)
-  console.log('secondHalf', secondHalf)
-
-  b.rawStream.write(firstHalf)
-  setTimeout(() => b.rawStream.write(secondHalf), 100)
-  setTimeout(() => b.rawStream.end(), 200)
+  b.rawStream.write(message.slice(0, 6))
+  setTimeout(() => b.rawStream.write(message.slice(6)), 100)
 })
 
 function frame (stream, data) {
-  console.log('frame', data)
-  console.log('data length', data.byteLength)
   const wrap = stream._frame(data.byteLength)
-  console.log('frame length', wrap.byteLength)
   wrap.set(data, stream.frameBytes)
-  console.log('framed length', wrap.slice(0, 4))
-  console.log('framed message', wrap.slice(4).toString())
   return wrap
 }
 
