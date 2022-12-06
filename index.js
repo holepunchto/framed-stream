@@ -108,14 +108,12 @@ module.exports = class FramedStream extends Duplex {
 
   _onend () {
     // console.log(this.__name, '_onend')
-    // this.rawStream.end()
     this.push(null)
   }
 
   _final (cb) {
     // console.log(this.__name, '_final')
     this.rawStream.end()
-    // this.push(null)
     cb(null)
   }
 }
