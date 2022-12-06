@@ -582,7 +582,7 @@ test('the receiving stream ends while still receiving data', function (t) {
   })
 
   b.on('error', function (error) {
-    t.is(error.message, 'Pair was destroyed', 'b: ' + error.message)
+    t.fail('b should not error: ' + error.message)
   })
 
   const message = frame(b, b4a.from('hello world'))
