@@ -25,7 +25,7 @@ module.exports = class FramedStream extends Duplex {
     // console.log(this.__name, '_predestroy')
     this.rawStream.destroy(new Error('Destroyed'))
 
-    if (this._writeCallback) this._writeContinue(new Error('Destroyed'))
+    this._maybeContinue(new Error('Destroyed'))
   }
 
   _read (cb) {
@@ -43,10 +43,10 @@ module.exports = class FramedStream extends Duplex {
     this._writeCallback = cb
   }
 
-  _writeContinue (err) {
+  _maybeContinue (err) {
     const cb = this._writeCallback
     this._writeCallback = null
-    // console.log(this.__name, '_writeContinue', !!cb)
+    // console.log(this.__name, '_maybeContinue', !!cb)
     if (cb !== null) cb(err)
   }
 
@@ -62,7 +62,7 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _ondrain () {
-    this._writeContinue(null)
+    this._maybeContinue(null)
   }
 
   _onerror (err) {
