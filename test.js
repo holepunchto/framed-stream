@@ -6,21 +6,21 @@ const b4a = require('b4a')
 test('basic', function (t) {
   t.plan(8)
 
-  const [a, b] = create(t)
+  const [a, b] = create()
 
-  a.stream.once('data', function (raw) {
+  a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.concat([b4a.from([5,0,0,0]), b4a.from('hello')]), 'a first raw data')
     
-    a.stream.once('data', function (raw) {
+    a.rawStream.once('data', function (raw) {
       t.alike(raw, b4a.concat([b4a.from([6,0,0,0]), b4a.from('world!')]), 'a first raw data')
 
-      a.stream.once('data', function () {
-        t.fail()
+      a.rawStream.once('data', function () {
+        t.fail('a should not receive more raw data')
       })
     })
   })
 
-  b.stream.on('data', function () {
+  b.rawStream.on('data', function () {
     t.fail('b should not receive raw data')
   })
 
@@ -29,6 +29,10 @@ test('basic', function (t) {
 
     a.once('data', function (data) {
       t.alike(data, b4a.from('world!'), 'a second message')
+
+      a.once('data', function () {
+        t.fail('a should not receive more messages')
+      })
     })
   })
 
@@ -54,10 +58,72 @@ test('basic', function (t) {
     t.pass('b closed')
   })
 
-  b.write(b4a.from('hello'))
-  b.write(b4a.from('world!'))
-  b.end()
+  b.write(b4a.from('hello'), function () {
+    console.log('b write callback')
+  })
+  setTimeout(() => {
+    b.write(b4a.from('world!'))
+    b.end()
+  }, 1000)
 })
+
+test.skip('write message length, but delay message content', function (t) {
+  t.plan(8)
+
+  const [a, b] = create()
+
+  a.rawStream.once('data', function (raw) {
+    t.alike(raw, b4a.concat([b4a.from([11,0,0,0]), b4a.from('he')]), 'a first raw data')
+
+    a.rawStream.once('data', function (raw) {
+      t.alike(raw, b4a.concat([b4a.from([6,0,0,0]), b4a.from('world!')]), 'a first raw data')
+
+      a.rawStream.once('data', function () {
+        t.fail()
+      })
+    })
+  })
+
+  b.rawStream.on('data', function () {
+    t.fail('b should not receive raw data')
+  })
+
+  a.once('data', function (data) {
+    t.alike(data, b4a.from('hello world'), 'a first message')
+  })
+
+  a.on('end', function () {
+    a.end()
+    t.pass('a end')
+  })
+
+  a.on('close', function () {
+    t.pass('a closed')
+  })
+
+  b.once('data', function () {
+    t.fail('b should not receive data')
+  })
+
+  b.on('end', function () {
+    t.pass('b end')
+    b.end()
+  })
+
+  b.on('close', function () {
+    t.pass('b closed')
+  })
+
+  const message = frame(b, b4a.from('hello world'))
+  b.rawStream.write(message.slice(0, 6), () => console.log('write cb'))
+  setTimeout(() => b.rawStream.write(message.slice(6)), 3000)
+})
+
+function frame (stream, data) {
+  const wrap = stream._frame(data.byteLength)
+  wrap.set(data, stream.frameBytes)
+  return wrap
+}
 
 function create () {
   const pair = duplexThrough()
@@ -66,4 +132,8 @@ function create () {
   const b = new FramedStream(pair[1], { __name: 'b' })
 
   return [a, b]
+}
+
+function sleep (ms) {
+  return new Promise(resolve => setTimeout(resolve, ms))
 }
