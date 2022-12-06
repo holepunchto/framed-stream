@@ -511,7 +511,7 @@ test('end while the other stream is still receiving data', function (t) {
   })
 
   a.on('error', function (error) {
-    t.is(error.message, 'Stream interrupted', error.message)
+    t.is(error.message, 'Stream interrupted', 'a: ' + error.message)
   })
 
   b.once('data', function () {
@@ -528,7 +528,7 @@ test('end while the other stream is still receiving data', function (t) {
   })
 
   b.on('error', function (error) {
-    t.is(error.message, 'Pair was destroyed', error.message)
+    t.is(error.message, 'Pair was destroyed', 'b: ' + error.message)
   })
 
   const message = frame(b, b4a.from('hello world'))
