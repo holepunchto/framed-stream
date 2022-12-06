@@ -12,7 +12,7 @@ test('basic', function (t) {
     t.alike(raw, b4a.concat([b4a.from([5,0,0,0]), b4a.from('hello')]), 'a first raw data')
     
     a.rawStream.once('data', function (raw) {
-      t.alike(raw, b4a.concat([b4a.from([6,0,0,0]), b4a.from('world!')]), 'a first raw data')
+      t.alike(raw, b4a.concat([b4a.from([6,0,0,0]), b4a.from('world!')]), 'a second raw data')
 
       a.rawStream.once('data', function () {
         t.fail('a should not receive more raw data')
@@ -37,8 +37,8 @@ test('basic', function (t) {
   })
 
   a.on('end', function () {
-    a.end()
     t.pass('a end')
+    a.end()
   })
 
   a.on('close', function () {
@@ -58,13 +58,9 @@ test('basic', function (t) {
     t.pass('b closed')
   })
 
-  b.write(b4a.from('hello'), function () {
-    console.log('b write callback')
-  })
-  setTimeout(() => {
-    b.write(b4a.from('world!'))
-    b.end()
-  }, 1000)
+  b.write(b4a.from('hello'))
+  b.write(b4a.from('world!'))
+  b.end()
 })
 
 test.skip('write message length, but delay message content', function (t) {
