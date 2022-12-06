@@ -592,7 +592,7 @@ test('the receiving stream ends while still receiving data', function (t) {
 })
 
 test('destroy', function (t) {
-  t.plan(2)
+  t.plan(3)
 
   const [a, b] = create()
 
@@ -604,8 +604,11 @@ test('destroy', function (t) {
     t.pass('b closed')
   })
 
+  b.on('error', function (error) {
+    t.is(error.message, 'Pair was destroyed', 'b: ' + error.message)
+  })
+
   a.destroy()
-  b.destroy() // + should not be needed?
 })
 
 function frame (stream, data) {
