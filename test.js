@@ -481,7 +481,7 @@ test('write a string', function (t) {
 })
 
 test('end while the other stream is still receiving data', function (t) {
-  t.plan(6)
+  t.plan(5)
 
   const [a, b] = create()
 
@@ -502,8 +502,7 @@ test('end while the other stream is still receiving data', function (t) {
   })
 
   a.on('end', function () {
-    t.pass('a end')
-    a.end()
+    t.fail('a should not receive end')
   })
 
   a.on('close', function () {
@@ -520,7 +519,6 @@ test('end while the other stream is still receiving data', function (t) {
 
   b.on('end', function () {
     t.fail('b should not receive end')
-    // b.end()
   })
 
   b.on('close', function () {

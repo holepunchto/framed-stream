@@ -116,14 +116,14 @@ module.exports = class FramedStream extends Duplex {
 
   _onend () {
     // console.log(this.__name, '_onend')
+
+    if (this._factor) return this.destroy(new Error('Stream interrupted'))
+
     this.push(null)
   }
 
   _final (cb) {
     // console.log(this.__name, '_final')
-
-    if (this._factor) return cb(new Error('Stream interrupted'))
-
     this.rawStream.end()
     cb(null)
   }
