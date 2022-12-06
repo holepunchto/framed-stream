@@ -3,7 +3,7 @@ const b4a = require('b4a')
 
 module.exports = class FramedStream extends Duplex {
   constructor (stream, { bits = 32, __name = '' } = {}) {
-    super()
+    super({ mapWritable })
 
     this.stream = stream
     this.frameBits = bits
@@ -60,6 +60,7 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _ondata (data) {
+    // console.log(this.__name, '_ondata', data)
     let read = 0
 
     while (read < data.byteLength) {
@@ -91,6 +92,8 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _push (message) {
+    // console.log(this.__name, '_push', message)
+
     this._factor = 0
     this._missingBytes = 0
     this._message = null
@@ -100,19 +103,19 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _onend () {
-    console.log(this.__name, '_onend')
+    // console.log(this.__name, '_onend')
     // this.stream.end()
     this.push(null)
   }
 
   _final (cb) {
-    console.log(this.__name, '_final')
+    // console.log(this.__name, '_final')
     this.stream.end()
     // this.push(null)
     cb(null)
   }
 }
 
-function map (s) {
+function mapWritable (s) {
   return typeof s === 'string' ? b4a.from(s) : s
 }
