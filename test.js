@@ -527,7 +527,7 @@ test('end while the other stream is still receiving data', async function (t) {
   setTimeout(() => b.end(), 100)
 })
 
-test('the receiving stream ends while still receiving data', function (t) {
+test('the receiving stream ends while still receiving data', async function (t) {
   t.plan(5)
 
   const [a, b] = create()
@@ -603,7 +603,7 @@ test('destroy', function (t) {
   a.destroy()
 })
 
-test('frame with 8 bits', function (t) {
+test('frame with 8 bits', async function (t) {
   t.plan(4)
 
   const [a, b] = create({ bits: 8 })
@@ -625,7 +625,7 @@ test('frame with 8 bits', function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
-test('try frame big message with 8 bits', function (t) {
+test('try frame big message with 8 bits', async function (t) {
   t.plan(1)
 
   const [a, b] = create({ bits: 8 })
