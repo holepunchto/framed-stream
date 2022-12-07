@@ -612,8 +612,15 @@ test('destroy', function (t) {
 })
 
 function frame (stream, data) {
-  const wrap = stream._frame(data.byteLength)
+  let len = data.byteLength
+  const wrap = b4a.allocUnsafe(len + stream.frameBytes)
+
+  for (let i = 0; i < stream.frameBytes; i++) {
+    wrap[i] = len
+    len >>>= 8
+  }
   wrap.set(data, stream.frameBytes)
+
   return wrap
 }
 
