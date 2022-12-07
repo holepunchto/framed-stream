@@ -35,7 +35,13 @@ module.exports = class FramedStream extends Duplex {
 
   _write (data, cb) {
     // console.log(this.__name, '_write', data.length)
-    const wrap = this._frame(data.byteLength)
+    let wrap
+    try {
+      wrap = this._frame(data.byteLength)
+    } catch (err) {
+      return cb(err)
+    }
+
     wrap.set(data, this.frameBytes)
 
     if (this.rawStream.write(wrap) === true) return cb(null)
@@ -51,6 +57,8 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _frame (len) {
+    if (len > 2 ** this.frameBits) throw new Error('Message length (' + len + ') is longer than max frame (' + (2 ** this.frameBits) + ')')
+
     const wrap = b4a.allocUnsafe(len + this.frameBytes)
 
     for (let i = 0; i < this.frameBytes; i++) {
