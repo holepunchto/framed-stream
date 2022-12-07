@@ -9,7 +9,7 @@ npm i framed-socket
 ## Usage
 For example, we have a server and client:
 ```js
-const FramedSocket = require('framed-socket')
+const FramedStream = require('framed-socket')
 const net = require('net')
 
 const server = net.createServer().listen(0)
@@ -42,7 +42,7 @@ stream.end()
 
 ## API
 
-#### `const stream = new FramedSocket(rawStream, [options])`
+#### `const stream = new FramedStream(rawStream, [options])`
 
 Make a new framed stream.
 
