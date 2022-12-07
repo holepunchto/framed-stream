@@ -633,6 +633,28 @@ test('frame with 8 bits', function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
+test('try frame big message with 8 bits', function (t) {
+  t.plan(1)
+
+  const [a, b] = create({ bits: 8 })
+
+  const bigMessage = b4a.alloc(256).fill('abcd')
+  a.write(bigMessage)
+
+  b.rawStream.on('data', () => t.fail('b should not receive raw data'))
+  b.on('data', () => t.fail('b should not receive messages'))
+
+  a.on('error', () => t.fail('a should not emit error'))
+  b.on('error', () => t.fail('b should not emit error'))
+
+  a.on('close', () => t.fail('a should not emit close'))
+  b.on('close', () => t.fail('b should not emit close'))
+
+  process.once('uncaughtException', function (error, origin) {
+    t.is(error.message, 'Message length (256) is longer than max frame (255)', error.message)
+  })
+})
+
 function frame (stream, data) {
   let len = data.byteLength
   const wrap = b4a.allocUnsafe(len + stream.frameBytes)
