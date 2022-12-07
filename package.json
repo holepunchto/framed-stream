@@ -1,6 +1,6 @@
 {
   "name": "framed-stream",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Read/write stream messages prefixed 8, 16, 24 or 32 bit length",
   "main": "index.js",
   "scripts": {
