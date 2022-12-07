@@ -672,7 +672,7 @@ test('frame with 24 bits (message of 16 mb)', async function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
-test('frame with 32 bits (message of 4 gb)', async function (t) {
+test.skip('frame with 32 bits (message of 4 gb)', async function (t) {
   t.plan(5)
 
   const [a, b] = await create({ bits: 32 })
