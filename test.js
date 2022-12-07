@@ -6,7 +6,7 @@ const b4a = require('b4a')
 test('full cycle', async function (t) {
   t.plan(8)
 
-  const [a, b] = await create()
+  const [a, b] = create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.concat([b4a.from([5, 0, 0, 0]), b4a.from('hello')]), 'a first raw data')
@@ -60,14 +60,13 @@ test('full cycle', async function (t) {
   })
 
   b.write(b4a.from('hello'))
-  await sleepImmediate()
   b.write(b4a.from('world!'))
 })
 
 test('partial message length', async function (t) {
   t.plan(8)
 
-  const [a, b] = await create()
+  const [a, b] = create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.from([11, 0]), 'a first raw data')
@@ -122,16 +121,14 @@ test('partial message length', async function (t) {
 
   const message = frame(b, b4a.from('hello world'))
   b.rawStream.write(message.slice(0, 2))
-  await sleepImmediate()
   b.rawStream.write(message.slice(2, 4))
-  await sleepImmediate()
   b.rawStream.write(message.slice(4))
 })
 
 test('delay message content', async function (t) {
   t.plan(7)
 
-  const [a, b] = await create()
+  const [a, b] = create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.from([11, 0, 0, 0]), 'a first raw data')
@@ -182,14 +179,13 @@ test('delay message content', async function (t) {
 
   const message = frame(b, b4a.from('hello world'))
   b.rawStream.write(message.slice(0, 4))
-  await sleepImmediate()
   b.rawStream.write(message.slice(4))
 })
 
 test('delay partial message content', async function (t) {
   t.plan(7)
 
-  const [a, b] = await create()
+  const [a, b] = create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.concat([b4a.from([11, 0, 0, 0]), b4a.from('he')]), 'a first raw data')
@@ -240,14 +236,13 @@ test('delay partial message content', async function (t) {
 
   const message = frame(b, b4a.from('hello world'))
   b.rawStream.write(message.slice(0, 6))
-  await sleepImmediate()
   b.rawStream.write(message.slice(6))
 })
 
 test('several partial message content', async function (t) {
   t.plan(8)
 
-  const [a, b] = await create()
+  const [a, b] = create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.from([11, 0, 0, 0]), 'a first raw data')
@@ -302,16 +297,14 @@ test('several partial message content', async function (t) {
 
   const message = frame(b, b4a.from('hello world'))
   b.rawStream.write(message.slice(0, 4))
-  await sleepImmediate()
   b.rawStream.write(message.slice(4, 6))
-  await sleepImmediate()
   b.rawStream.write(message.slice(6))
 })
 
 test('multiple messages at once', async function (t) {
   t.plan(8)
 
-  const [a, b] = await create()
+  const [a, b] = create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(
@@ -381,7 +374,7 @@ test('multiple messages at once', async function (t) {
 test('big message', async function (t) {
   t.plan(6)
 
-  const [a, b] = await create()
+  const [a, b] = create()
 
   const bigMessageLength = 2 * 1024 * 1024
   const bigMessage = b4a.alloc(bigMessageLength).fill('abcd')
@@ -435,7 +428,7 @@ test('big message', async function (t) {
 test('write a string', async function (t) {
   t.plan(6)
 
-  const [a, b] = await create()
+  const [a, b] = create()
 
   a.rawStream.on('data', function (raw) {
     t.alike(raw, b4a.concat([b4a.from([5, 0, 0, 0]), b4a.from('hello')]), 'a first raw data')
@@ -478,7 +471,7 @@ test('write a string', async function (t) {
 test('end while the other stream is still receiving data', async function (t) {
   t.plan(5)
 
-  const [a, b] = await create()
+  const [a, b] = create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.concat([b4a.from([11, 0, 0, 0]), b4a.from('he')]), 'a first raw data')
@@ -526,14 +519,13 @@ test('end while the other stream is still receiving data', async function (t) {
 
   const message = frame(b, b4a.from('hello world'))
   b.rawStream.write(message.slice(0, 6))
-  await sleepImmediate()
   b.end()
 })
 
 test('the receiving stream ends while still receiving data', async function (t) {
   t.plan(5)
 
-  const [a, b] = await create()
+  const [a, b] = create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.concat([b4a.from([11, 0, 0, 0]), b4a.from('he')]), 'a first raw data')
@@ -582,14 +574,13 @@ test('the receiving stream ends while still receiving data', async function (t) 
 
   const message = frame(b, b4a.from('hello world'))
   b.rawStream.write(message.slice(0, 6))
-  await sleepImmediate() // Note: not needed using net
   a.end()
 })
 
 test('destroy', async function (t) {
   t.plan(3)
 
-  const [a, b] = await create()
+  const [a, b] = create()
 
   a.on('close', function () {
     t.pass('a closed')
@@ -609,7 +600,7 @@ test('destroy', async function (t) {
 test('frame with 8 bits (message of 255 bytes)', async function (t) {
   t.plan(4)
 
-  const [a, b] = await create({ bits: 8 })
+  const [a, b] = create({ bits: 8 })
 
   const message = b4a.alloc(255).fill('abcd')
   a.write(message)
@@ -631,7 +622,7 @@ test('frame with 8 bits (message of 255 bytes)', async function (t) {
 test('frame with 16 bits (message of 65 kb)', async function (t) {
   t.plan(4)
 
-  const [a, b] = await create({ bits: 16 })
+  const [a, b] = create({ bits: 16 })
 
   const message = b4a.alloc(65535).fill('abcd')
   a.write(message)
@@ -653,7 +644,7 @@ test('frame with 16 bits (message of 65 kb)', async function (t) {
 test('frame with 24 bits (message of 16 mb)', async function (t) {
   t.plan(4)
 
-  const [a, b] = await create({ bits: 24 })
+  const [a, b] = create({ bits: 24 })
 
   const message = b4a.alloc(16777215).fill('abcd')
   a.write(message)
@@ -675,7 +666,7 @@ test('frame with 24 bits (message of 16 mb)', async function (t) {
 test.skip('frame with 32 bits (message of 4 gb)', async function (t) {
   t.plan(5)
 
-  const [a, b] = await create({ bits: 32 })
+  const [a, b] = create({ bits: 32 })
 
   const message = b4a.alloc(4294967295 - 4).fill('abcd')
   a.write(message)
@@ -698,7 +689,7 @@ test.skip('frame with 32 bits (message of 4 gb)', async function (t) {
 test('try frame big message with 8 bits', async function (t) {
   t.plan(1)
 
-  const [a, b] = await create({ bits: 8 })
+  const [a, b] = create({ bits: 8 })
 
   const bigMessage = b4a.alloc(256).fill('abcd')
   a.write(bigMessage)
@@ -714,15 +705,8 @@ test('try frame big message with 8 bits', async function (t) {
 
   process.once('uncaughtException', function (error, origin) {
     t.is(error.message, 'Message length (256) is longer than max frame (255)', error.message)
-
-    // a.destroy() // Note: this doesn't trigger 'close' event for "a"
-    // b.destroy()
   })
 })
-
-function sleepImmediate () {
-  return new Promise(resolve => setImmediate(resolve))
-}
 
 function frame (stream, data) {
   let len = data.byteLength
@@ -737,7 +721,7 @@ function frame (stream, data) {
   return wrap
 }
 
-async function create (opts = {}) {
+function create (opts = {}) {
   const pair = duplexThrough()
 
   const a = new FramedStream(pair[0], opts)
@@ -745,20 +729,3 @@ async function create (opts = {}) {
 
   return [a, b]
 }
-
-/* async function create (opts = {}) {
-  const net = require('net')
-  const server = net.createServer().listen(0)
-
-  const client = net.connect(server.address().port, server.address().address)
-  const a = new FramedStream(client, opts)
-
-  const onconnection = new Promise(resolve => server.once('connection', resolve))
-  const b = new FramedStream(await onconnection, opts)
-
-  a.once('close', () => server.close())
-
-  await sleepImmediate()
-
-  return [a, b]
-} */
