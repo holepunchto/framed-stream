@@ -671,8 +671,8 @@ function frame (stream, data) {
 function create (opts = {}) {
   const pair = duplexThrough()
 
-  const a = new FramedStream(pair[0], { ...opts, __name: 'a' })
-  const b = new FramedStream(pair[1], { ...opts, __name: 'b' })
+  const a = new FramedStream(pair[0], opts)
+  const b = new FramedStream(pair[1], opts)
 
   return [a, b]
 }

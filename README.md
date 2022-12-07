@@ -3,7 +3,7 @@
 Description
 
 ```
-npm i holepunchto/framed-socket
+npm i framed-socket
 ```
 
 ## Usage

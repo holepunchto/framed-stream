@@ -2,14 +2,13 @@ const { Duplex } = require('streamx')
 const b4a = require('b4a')
 
 module.exports = class FramedStream extends Duplex {
-  constructor (rawStream, { bits = 32, __name = '' } = {}) {
+  constructor (rawStream, { bits = 32 } = {}) {
     super({ mapWritable })
 
     this.rawStream = rawStream
     this.frameBits = bits
     this.frameBytes = this.frameBits / 8
     this.maxMessageLength = Math.pow(2, this.frameBits) - 1
-    this.__name = __name
 
     this._factor = 0
     this._missingBytes = 0
@@ -23,8 +22,9 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _predestroy () {
-    this.rawStream.destroy(new Error('Destroyed'))
-    this._maybeContinue(new Error('Destroyed'))
+    const err = new Error('Destroyed')
+    this.rawStream.destroy(err)
+    this._maybeContinue(err)
   }
 
   _read (cb) {
@@ -109,7 +109,10 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _onend () {
-    if (this._factor) return this.destroy(new Error('Stream interrupted'))
+    if (this._factor) {
+      this.destroy(new Error('Stream interrupted'))
+      return
+    }
 
     this.push(null)
   }
