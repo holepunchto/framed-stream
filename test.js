@@ -583,7 +583,7 @@ test('the receiving stream ends while still receiving data', async function (t) 
   setTimeout(() => a.end(), 100)
 })
 
-test('destroy', function (t) {
+test('destroy', async function (t) {
   t.plan(3)
 
   const [a, b] = await create()
