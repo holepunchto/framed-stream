@@ -10,7 +10,7 @@ module.exports = class FramedStream extends Duplex {
     this.rawStream = rawStream
     this.frameBits = bits
     this.frameBytes = this.frameBits / 8
-    this.maxMessageLength = Math.pow(2, this.frameBits) - 1
+    this.maxMessageLength = 0xffffffff >>> (32 - this.frameBits)
 
     this._factor = 0
     this._missingBytes = 0
