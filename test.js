@@ -60,6 +60,7 @@ test('full cycle', async function (t) {
   })
 
   b.write(b4a.from('hello'))
+  await sleepImmediate()
   b.write(b4a.from('world!'))
 })
 
@@ -121,8 +122,10 @@ test('partial message length', async function (t) {
 
   const message = frame(b, b4a.from('hello world'))
   b.rawStream.write(message.slice(0, 2))
-  setTimeout(() => b.rawStream.write(message.slice(2, 4)), 100)
-  setTimeout(() => b.rawStream.write(message.slice(4)), 200)
+  await sleepImmediate()
+  b.rawStream.write(message.slice(2, 4))
+  await sleepImmediate()
+  b.rawStream.write(message.slice(4))
 })
 
 test('delay message content', async function (t) {
@@ -179,7 +182,8 @@ test('delay message content', async function (t) {
 
   const message = frame(b, b4a.from('hello world'))
   b.rawStream.write(message.slice(0, 4))
-  setTimeout(() => b.rawStream.write(message.slice(4)), 100)
+  await sleepImmediate()
+  b.rawStream.write(message.slice(4))
 })
 
 test('delay partial message content', async function (t) {
@@ -236,7 +240,8 @@ test('delay partial message content', async function (t) {
 
   const message = frame(b, b4a.from('hello world'))
   b.rawStream.write(message.slice(0, 6))
-  setTimeout(() => b.rawStream.write(message.slice(6)), 100)
+  await sleepImmediate()
+  b.rawStream.write(message.slice(6))
 })
 
 test('several partial message content', async function (t) {
@@ -297,8 +302,10 @@ test('several partial message content', async function (t) {
 
   const message = frame(b, b4a.from('hello world'))
   b.rawStream.write(message.slice(0, 4))
-  setTimeout(() => b.rawStream.write(message.slice(4, 6)), 100)
-  setTimeout(() => b.rawStream.write(message.slice(6)), 200)
+  await sleepImmediate()
+  b.rawStream.write(message.slice(4, 6))
+  await sleepImmediate()
+  b.rawStream.write(message.slice(6))
 })
 
 test('multiple messages at once', async function (t) {
@@ -523,8 +530,8 @@ test('end while the other stream is still receiving data', async function (t) {
 
   const message = frame(b, b4a.from('hello world'))
   b.rawStream.write(message.slice(0, 6))
-
-  setTimeout(() => b.end(), 100)
+  await sleepImmediate()
+  b.end()
 })
 
 test('the receiving stream ends while still receiving data', async function (t) {
@@ -579,8 +586,8 @@ test('the receiving stream ends while still receiving data', async function (t) 
 
   const message = frame(b, b4a.from('hello world'))
   b.rawStream.write(message.slice(0, 6))
-
-  setTimeout(() => a.end(), 100)
+  await sleepImmediate() // Note: not needed using net
+  a.end()
 })
 
 test('destroy', async function (t) {
@@ -646,6 +653,10 @@ test('try frame big message with 8 bits', async function (t) {
     t.is(error.message, 'Message length (256) is longer than max frame (255)', error.message)
   })
 })
+
+function sleepImmediate () {
+  return new Promise(resolve => setImmediate(resolve))
+}
 
 function frame (stream, data) {
   let len = data.byteLength
