@@ -5,7 +5,7 @@ module.exports = class FramedStream extends Duplex {
   constructor (rawStream, { bits = 32 } = {}) {
     super({ mapWritable })
 
-    if (bits !== 8 && bits !== 16 && bits !== 24 && bits !== 32) throw new Error('Frame bits is invalid')
+    if (bits !== 32 && bits !== 24 && bits !== 16 && bits !== 8) throw new Error('Frame bits is invalid')
 
     this.rawStream = rawStream
     this.frameBits = bits
