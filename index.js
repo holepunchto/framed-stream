@@ -5,6 +5,8 @@ module.exports = class FramedStream extends Duplex {
   constructor (rawStream, { bits = 32 } = {}) {
     super({ mapWritable })
 
+    if ([8, 16, 24, 32].indexOf(bits) === -1) throw new Error('Frame bits is invalid')
+
     this.rawStream = rawStream
     this.frameBits = bits
     this.frameBytes = this.frameBits / 8

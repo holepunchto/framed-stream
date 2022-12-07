@@ -708,6 +708,17 @@ test('try frame big message with 8 bits', function (t) {
   })
 })
 
+test('try create stream with invalid frame bits', function (t) {
+  t.plan(1)
+
+  try {
+    create({ bits: 9 })
+    t.fail('should not have created the stream')
+  } catch (error) {
+    t.is(error.message, 'Frame bits is invalid')
+  }
+})
+
 function frame (stream, data) {
   let len = data.byteLength
   const wrap = b4a.allocUnsafe(len + stream.frameBytes)
