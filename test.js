@@ -704,7 +704,7 @@ test('try frame big message with 8 bits', function (t) {
   b.on('close', () => t.fail('b should not emit close'))
 
   process.once('uncaughtException', function (error, origin) {
-    t.is(error.message, 'Message length (256) is longer than max frame (255)', error.message)
+    t.is(error.message, 'Message length (256) is longer than max frame (255)', origin + ': ' + error.message)
   })
 })
 
