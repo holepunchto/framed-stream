@@ -745,3 +745,20 @@ async function create (opts = {}) {
 
   return [a, b]
 }
+
+/* async function create (opts = {}) {
+  const net = require('net')
+  const server = net.createServer().listen(0)
+
+  const client = net.connect(server.address().port, server.address().address)
+  const a = new FramedStream(client, opts)
+
+  const onconnection = new Promise(resolve => server.once('connection', resolve))
+  const b = new FramedStream(await onconnection, opts)
+
+  a.once('close', () => server.close())
+
+  await sleepImmediate()
+
+  return [a, b]
+} */
