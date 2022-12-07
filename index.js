@@ -22,9 +22,7 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _predestroy () {
-    // console.log(this.__name, '_predestroy')
     this.rawStream.destroy(new Error('Destroyed'))
-
     this._maybeContinue(new Error('Destroyed'))
   }
 
@@ -34,19 +32,16 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _write (data, cb) {
-    // console.log(this.__name, '_write', data.length)
     const wrap = this._frame(data.byteLength)
     wrap.set(data, this.frameBytes)
 
     if (this.rawStream.write(wrap) === true) return cb(null)
-    // console.log(this.__name, '_write backpressure?')
     this._writeCallback = cb
   }
 
   _maybeContinue (err) {
     const cb = this._writeCallback
     this._writeCallback = null
-    // console.log(this.__name, '_maybeContinue', !!cb)
     if (cb !== null) cb(err)
   }
 
@@ -69,12 +64,10 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _onerror (err) {
-    // console.log(this.__name, 'rawStream error', err.message)
     this.destroy(err)
   }
 
   _ondata (data) {
-    // console.log(this.__name, '_ondata', data)
     let read = 0
 
     while (read < data.byteLength && !this.destroying) {
@@ -107,8 +100,6 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _push (message) {
-    // console.log(this.__name, '_push', message)
-
     this._factor = 0
     this._missingBytes = 0
     this._message = null
@@ -118,15 +109,12 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _onend () {
-    // console.log(this.__name, '_onend')
-
     if (this._factor) return this.destroy(new Error('Stream interrupted'))
 
     this.push(null)
   }
 
   _final (cb) {
-    // console.log(this.__name, '_final')
     this.rawStream.end()
     cb(null)
   }
