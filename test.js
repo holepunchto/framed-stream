@@ -512,7 +512,7 @@ test('end while the other stream is still receiving data', async function (t) {
     t.fail('b should not receive messages')
   })
 
-  b.on('end', function () { // Note: this is emitted using net
+  b.on('end', function () {
     t.fail('b should not receive end')
   })
 
