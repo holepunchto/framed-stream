@@ -14,6 +14,7 @@ const net = require('net')
 const server = net.createServer().listen(0)
 const client = net.connect(server.address().port, server.address().address)
 
+// Server
 server.on('connection', function (socket) {
   const stream = new FramedStream(socket)
 
@@ -23,7 +24,9 @@ server.on('connection', function (socket) {
   stream.on('error', console.error)
 })
 
+// Client
 const stream = new FramedStream(client)
+
 stream.on('data', (message) => console.log('server says:', message.toString()))
 stream.on('end', () => stream.end())
 stream.on('close', () => console.log('client stream is closed'))
