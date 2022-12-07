@@ -39,7 +39,7 @@ stream.end()
 
 ## API
 
-#### `const stream = new FramedSocket(socket, opts)`
+#### `const stream = new FramedSocket(socket, [opts])`
 
 ## License
 MIT
