@@ -606,7 +606,7 @@ test('destroy', async function (t) {
   a.destroy()
 })
 
-test('frame with 8 bits', async function (t) {
+test('frame with 8 bits (message of 255 bytes)', async function (t) {
   t.plan(4)
 
   const [a, b] = await create({ bits: 8 })
@@ -628,7 +628,7 @@ test('frame with 8 bits', async function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
-test('frame with 16 bits', async function (t) {
+test('frame with 16 bits (message of 65 kb)', async function (t) {
   t.plan(4)
 
   const [a, b] = await create({ bits: 16 })
@@ -650,7 +650,7 @@ test('frame with 16 bits', async function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
-test('frame with 24 bits', async function (t) {
+test('frame with 24 bits (message of 16 mb)', async function (t) {
   t.plan(4)
 
   const [a, b] = await create({ bits: 24 })
@@ -672,7 +672,7 @@ test('frame with 24 bits', async function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
-test('frame with 32 bits', async function (t) {
+test('frame with 32 bits (message of 4 gb)', async function (t) {
   t.plan(5)
 
   const [a, b] = await create({ bits: 32 })
