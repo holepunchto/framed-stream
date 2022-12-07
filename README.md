@@ -1,9 +1,9 @@
-# framed-socket
+# framed-stream
 
 Read/write stream messages prefixed 8, 16, 24 or 32 bit length.
 
 ```
-npm i framed-socket
+npm i framed-stream
 ```
 
 ## Usage
