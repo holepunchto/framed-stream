@@ -8,6 +8,7 @@ module.exports = class FramedStream extends Duplex {
     this.rawStream = rawStream
     this.frameBits = bits
     this.frameBytes = this.frameBits / 8
+    this.maxMessageLength = Math.pow(2, this.frameBits) - 1
     this.__name = __name
 
     this._factor = 0
@@ -46,8 +47,7 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _frame (len) {
-    const max = 2 ** this.frameBits - 1
-    if (len > max) throw new Error('Message length (' + len + ') is longer than max frame (' + max + ')')
+    if (len > this.maxMessageLength) throw new Error('Message length (' + len + ') is longer than max frame (' + this.maxMessageLength + ')')
 
     const wrap = b4a.allocUnsafe(len + this.frameBytes)
 
