@@ -7,7 +7,7 @@ npm i framed-socket
 ```
 
 ## Usage
-For example, we create a server and client:
+For example, we have a server and client:
 ```js
 const FramedSocket = require('framed-socket')
 const net = require('net')
