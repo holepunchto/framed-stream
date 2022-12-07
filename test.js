@@ -516,7 +516,7 @@ test('end while the other stream is still receiving data', async function (t) {
     t.fail('b should not receive messages')
   })
 
-  b.on('end', function () {
+  b.on('end', function () { // Note: this is emitted using net
     t.fail('b should not receive end')
   })
 
@@ -524,7 +524,7 @@ test('end while the other stream is still receiving data', async function (t) {
     t.pass('b closed')
   })
 
-  b.on('error', function (error) {
+  b.on('error', function (error) { // Note: this is *not* emitted using net
     t.is(error.message, 'Pair was destroyed', 'b: ' + error.message)
   })
 
@@ -599,11 +599,11 @@ test('destroy', async function (t) {
     t.pass('a closed')
   })
 
-  b.on('close', function () {
+  b.on('close', function () { // Note: this is *not* emitted using net
     t.pass('b closed')
   })
 
-  b.on('error', function (error) {
+  b.on('error', function (error) { // Note: this is *not* emitted using net
     t.is(error.message, 'Pair was destroyed', 'b: ' + error.message)
   })
 
@@ -651,6 +651,9 @@ test('try frame big message with 8 bits', async function (t) {
 
   process.once('uncaughtException', function (error, origin) {
     t.is(error.message, 'Message length (256) is longer than max frame (255)', error.message)
+
+    // a.destroy() // Note: this doesn't trigger 'close' event for "a"
+    // b.destroy()
   })
 })
 
