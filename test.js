@@ -611,7 +611,7 @@ test('destroy', function (t) {
   a.destroy()
 })
 
-test.solo('frame with 8 bits', function (t) {
+test('frame with 8 bits', function (t) {
   t.plan(4)
 
   const [a, b] = create({ bits: 8 })
