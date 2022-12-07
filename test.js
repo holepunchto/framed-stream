@@ -616,14 +616,15 @@ test('frame with 8 bits', function (t) {
 
   const [a, b] = create({ bits: 8 })
 
-  a.write(b4a.from('hello'))
+  const message = b4a.alloc(255).fill('abcd')
+  a.write(message)
 
   b.rawStream.on('data', function (raw) {
-    t.alike(raw, b4a.concat([b4a.from([5]), b4a.from('hello')]), 'a first raw data')
+    t.alike(raw, b4a.concat([b4a.from([255]), message]), 'a first raw data')
   })
 
-  b.on('data', function (message) {
-    t.alike(message, b4a.from('hello'))
+  b.on('data', function (data) {
+    t.alike(data, message)
     a.end()
   })
 
