@@ -685,7 +685,7 @@ test('frame with 32 bits', async function (t) {
   a.write(message)
 
   b.rawStream.on('data', function (raw) {
-    t.alike(raw.slice(0, 4), b4a.from([255, 255, 255, 255]), 'a first raw data (length)')
+    t.alike(raw.slice(0, 4), b4a.from([251, 255, 255, 255]), 'a first raw data (length)')
     t.is(raw.slice(4).compare(message), 0, 'a first raw data (message)')
     // t.alike(raw, b4a.concat([b4a.from([255, 255, 255, 255]), message]), 'a first raw data')
   })
