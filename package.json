@@ -1,0 +1,29 @@
+{
+  "name": "framed-stream",
+  "version": "0.0.0",
+  "description": "Read/write stream messages prefixed 8, 16, 24 or 32 bit length",
+  "main": "index.js",
+  "scripts": {
+    "test": "standard && brittle test.js --coverage",
+    "lint": "standard"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/holepunchto/framed-stream.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/holepunchto/framed-stream/issues"
+  },
+  "homepage": "https://github.com/holepunchto/framed-stream",
+  "dependencies": {
+    "b4a": "^1.6.1",
+    "streamx": "^2.12.5"
+  },
+  "devDependencies": {
+    "brittle": "^3.1.1",
+    "duplex-through": "^1.0.2",
+    "standard": "^17.0.0"
+  }
+}
