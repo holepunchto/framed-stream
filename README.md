@@ -1,6 +1,6 @@
 # framed-socket
 
-Description
+Read/write stream messages prefixed 8, 16, 24 or 32 bit length.
 
 ```
 npm i framed-socket

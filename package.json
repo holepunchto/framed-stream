@@ -1,7 +1,7 @@
 {
   "name": "framed-socket",
   "version": "0.0.0",
-  "description": "",
+  "description": "Read/write stream messages prefixed 8, 16, 24 or 32 bit length",
   "main": "index.js",
   "scripts": {
     "test": "standard && brittle test.js --coverage",
