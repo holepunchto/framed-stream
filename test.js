@@ -668,14 +668,3 @@ function create (opts = {}) {
 
   return [a, b]
 }
-
-/* function readUInt32LE (buf) {
-  return buf[0] + (buf[1] << 8) + (buf[2] << 16) + (buf[3] << 24)
-}
-
-function writeUInt32LE (buf, value) {
-  buf[0] = value
-  buf[1] = value >>> 8
-  buf[2] = value >>> 16
-  buf[3] = value >>> 24
-} */
