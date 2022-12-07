@@ -40,7 +40,6 @@ test('full cycle', function (t) {
 
   a.on('end', function () {
     t.pass('a end')
-    // a.end()
   })
 
   a.on('close', function () {
@@ -101,7 +100,6 @@ test('partial message length', function (t) {
 
   a.on('end', function () {
     t.pass('a end')
-    // a.end()
   })
 
   a.on('close', function () {
@@ -160,7 +158,6 @@ test('delay message content', function (t) {
 
   a.on('end', function () {
     t.pass('a end')
-    // a.end()
   })
 
   a.on('close', function () {
@@ -218,7 +215,6 @@ test('delay partial message content', function (t) {
 
   a.on('end', function () {
     t.pass('a end')
-    // a.end()
   })
 
   a.on('close', function () {
@@ -280,7 +276,6 @@ test('several partial message content', function (t) {
 
   a.on('end', function () {
     t.pass('a end')
-    // a.end()
   })
 
   a.on('close', function () {
@@ -351,7 +346,6 @@ test('multiple messages at once', function (t) {
 
   a.on('end', function () {
     t.pass('a end')
-    // a.end()
   })
 
   a.on('close', function () {
@@ -413,7 +407,6 @@ test('big message', function (t) {
 
   a.on('end', function () {
     t.pass('a end')
-    // a.end()
   })
 
   a.on('close', function () {
@@ -457,7 +450,6 @@ test('write a string', function (t) {
 
   a.on('end', function () {
     t.pass('a end')
-    // a.end()
   })
 
   a.on('close', function () {
