@@ -57,7 +57,7 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _frame (len) {
-    if (len > 2 ** this.frameBits) throw new Error('Message length (' + len + ') is longer than max frame (' + (2 ** this.frameBits) + ')')
+    if (len > 2 ** this.frameBits - 1) throw new Error('Message length (' + len + ') is longer than max frame (' + (2 ** this.frameBits - 1) + ')')
 
     const wrap = b4a.allocUnsafe(len + this.frameBytes)
 
