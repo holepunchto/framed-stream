@@ -3,7 +3,7 @@ const FramedStream = require('./index.js')
 const duplexThrough = require('duplex-through')
 const b4a = require('b4a')
 
-test('full cycle', async function (t) {
+test('full cycle', function (t) {
   t.plan(8)
 
   const [a, b] = create()
@@ -63,7 +63,7 @@ test('full cycle', async function (t) {
   b.write(b4a.from('world!'))
 })
 
-test('partial message length', async function (t) {
+test('partial message length', function (t) {
   t.plan(8)
 
   const [a, b] = create()
@@ -125,7 +125,7 @@ test('partial message length', async function (t) {
   b.rawStream.write(message.slice(4))
 })
 
-test('delay message content', async function (t) {
+test('delay message content', function (t) {
   t.plan(7)
 
   const [a, b] = create()
@@ -182,7 +182,7 @@ test('delay message content', async function (t) {
   b.rawStream.write(message.slice(4))
 })
 
-test('delay partial message content', async function (t) {
+test('delay partial message content', function (t) {
   t.plan(7)
 
   const [a, b] = create()
@@ -239,7 +239,7 @@ test('delay partial message content', async function (t) {
   b.rawStream.write(message.slice(6))
 })
 
-test('several partial message content', async function (t) {
+test('several partial message content', function (t) {
   t.plan(8)
 
   const [a, b] = create()
@@ -301,7 +301,7 @@ test('several partial message content', async function (t) {
   b.rawStream.write(message.slice(6))
 })
 
-test('multiple messages at once', async function (t) {
+test('multiple messages at once', function (t) {
   t.plan(8)
 
   const [a, b] = create()
@@ -371,7 +371,7 @@ test('multiple messages at once', async function (t) {
   b.rawStream.write(b4a.concat([message1, message2, message3]))
 })
 
-test('big message', async function (t) {
+test('big message', function (t) {
   t.plan(6)
 
   const [a, b] = create()
@@ -425,7 +425,7 @@ test('big message', async function (t) {
   b.write(bigMessage)
 })
 
-test('write a string', async function (t) {
+test('write a string', function (t) {
   t.plan(6)
 
   const [a, b] = create()
@@ -468,7 +468,7 @@ test('write a string', async function (t) {
   b.write('hello')
 })
 
-test('end while the other stream is still receiving data', async function (t) {
+test('end while the other stream is still receiving data', function (t) {
   t.plan(5)
 
   const [a, b] = create()
@@ -522,7 +522,7 @@ test('end while the other stream is still receiving data', async function (t) {
   b.end()
 })
 
-test('the receiving stream ends while still receiving data', async function (t) {
+test('the receiving stream ends while still receiving data', function (t) {
   t.plan(5)
 
   const [a, b] = create()
@@ -577,7 +577,7 @@ test('the receiving stream ends while still receiving data', async function (t) 
   a.end()
 })
 
-test('destroy', async function (t) {
+test('destroy', function (t) {
   t.plan(3)
 
   const [a, b] = create()
@@ -597,7 +597,7 @@ test('destroy', async function (t) {
   a.destroy()
 })
 
-test('frame with 8 bits (message of 255 bytes)', async function (t) {
+test('frame with 8 bits (message of 255 bytes)', function (t) {
   t.plan(4)
 
   const [a, b] = create({ bits: 8 })
@@ -619,7 +619,7 @@ test('frame with 8 bits (message of 255 bytes)', async function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
-test('frame with 16 bits (message of 65 kb)', async function (t) {
+test('frame with 16 bits (message of 65 kb)', function (t) {
   t.plan(4)
 
   const [a, b] = create({ bits: 16 })
@@ -641,7 +641,7 @@ test('frame with 16 bits (message of 65 kb)', async function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
-test('frame with 24 bits (message of 16 mb)', async function (t) {
+test('frame with 24 bits (message of 16 mb)', function (t) {
   t.plan(4)
 
   const [a, b] = create({ bits: 24 })
@@ -663,7 +663,7 @@ test('frame with 24 bits (message of 16 mb)', async function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
-test.skip('frame with 32 bits (message of 4 gb)', async function (t) {
+test.skip('frame with 32 bits (message of 4 gb)', function (t) {
   t.plan(5)
 
   const [a, b] = create({ bits: 32 })
@@ -686,7 +686,7 @@ test.skip('frame with 32 bits (message of 4 gb)', async function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
-test('try frame big message with 8 bits', async function (t) {
+test('try frame big message with 8 bits', function (t) {
   t.plan(1)
 
   const [a, b] = create({ bits: 8 })
