@@ -611,6 +611,27 @@ test('destroy', function (t) {
   a.destroy()
 })
 
+test.solo('frame with 8 bits', function (t) {
+  t.plan(4)
+
+  const [a, b] = create({ bits: 8 })
+
+  a.write(b4a.from('hello'))
+
+  b.rawStream.on('data', function (raw) {
+    t.alike(raw, b4a.concat([b4a.from([5]), b4a.from('hello')]), 'a first raw data')
+  })
+
+  b.on('data', function (message) {
+    t.alike(message, b4a.from('hello'))
+    a.end()
+  })
+
+  b.on('end', () => b.end())
+  a.on('close', () => t.pass('a closed'))
+  b.on('close', () => t.pass('b closed'))
+})
+
 function frame (stream, data) {
   let len = data.byteLength
   const wrap = b4a.allocUnsafe(len + stream.frameBytes)
@@ -624,11 +645,11 @@ function frame (stream, data) {
   return wrap
 }
 
-function create () {
+function create (opts = {}) {
   const pair = duplexThrough()
 
-  const a = new FramedStream(pair[0], { __name: 'a' })
-  const b = new FramedStream(pair[1], { __name: 'b' })
+  const a = new FramedStream(pair[0], { ...opts, __name: 'a' })
+  const b = new FramedStream(pair[1], { ...opts, __name: 'b' })
 
   return [a, b]
 }
