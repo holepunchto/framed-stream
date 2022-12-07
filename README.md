@@ -7,17 +7,13 @@ npm i framed-socket
 ```
 
 ## Usage
-For example, we have a server and client:
+We have a server that handles connections like so:
 ```js
-const FramedStream = require('framed-socket')
+const FramedStream = require('framed-stream')
 const net = require('net')
 
-const server = net.createServer().listen(0)
-const client = net.connect(server.address().port, server.address().address)
-```
+const server = net.createServer().listen(3000)
 
-Server handles connections like so:
-```js
 server.on('connection', function (socket) {
   const stream = new FramedStream(socket)
 
@@ -27,8 +23,9 @@ server.on('connection', function (socket) {
 })
 ```
 
-Client does the same, but it sends two messages:
+Client does the same, also for example it sends two messages:
 ```js
+const client = net.connect(3000)
 const stream = new FramedStream(client)
 
 stream.on('data', (message) => console.log('server says:', message.toString()))
