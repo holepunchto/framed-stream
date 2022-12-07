@@ -3,7 +3,7 @@ const FramedStream = require('./index.js')
 const duplexThrough = require('duplex-through')
 const b4a = require('b4a')
 
-test('full cycle', function (t) {
+test('full cycle', async function (t) {
   t.plan(8)
 
   const [a, b] = create()
@@ -63,7 +63,7 @@ test('full cycle', function (t) {
   b.write(b4a.from('world!'))
 })
 
-test('partial message length', function (t) {
+test('partial message length', async function (t) {
   t.plan(8)
 
   const [a, b] = create()
@@ -125,7 +125,7 @@ test('partial message length', function (t) {
   setTimeout(() => b.rawStream.write(message.slice(4)), 200)
 })
 
-test('delay message content', function (t) {
+test('delay message content', async function (t) {
   t.plan(7)
 
   const [a, b] = create()
@@ -182,7 +182,7 @@ test('delay message content', function (t) {
   setTimeout(() => b.rawStream.write(message.slice(4)), 100)
 })
 
-test('delay partial message content', function (t) {
+test('delay partial message content', async function (t) {
   t.plan(7)
 
   const [a, b] = create()
@@ -239,7 +239,7 @@ test('delay partial message content', function (t) {
   setTimeout(() => b.rawStream.write(message.slice(6)), 100)
 })
 
-test('several partial message content', function (t) {
+test('several partial message content', async function (t) {
   t.plan(8)
 
   const [a, b] = create()
@@ -301,7 +301,7 @@ test('several partial message content', function (t) {
   setTimeout(() => b.rawStream.write(message.slice(6)), 200)
 })
 
-test('multiple messages at once', function (t) {
+test('multiple messages at once', async function (t) {
   t.plan(8)
 
   const [a, b] = create()
@@ -371,7 +371,7 @@ test('multiple messages at once', function (t) {
   b.rawStream.write(b4a.concat([message1, message2, message3]))
 })
 
-test('big message', function (t) {
+test('big message', async function (t) {
   t.plan(6)
 
   const [a, b] = create()
@@ -429,7 +429,7 @@ test('big message', function (t) {
   b.write(bigMessage)
 })
 
-test('write a string', function (t) {
+test('write a string', async function (t) {
   t.plan(6)
 
   const [a, b] = create()
@@ -472,7 +472,7 @@ test('write a string', function (t) {
   b.write('hello')
 })
 
-test('end while the other stream is still receiving data', function (t) {
+test('end while the other stream is still receiving data', async function (t) {
   t.plan(5)
 
   const [a, b] = create()
