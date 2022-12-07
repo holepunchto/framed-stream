@@ -6,7 +6,7 @@ const b4a = require('b4a')
 test('full cycle', async function (t) {
   t.plan(8)
 
-  const [a, b] = create()
+  const [a, b] = await create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.concat([b4a.from([5, 0, 0, 0]), b4a.from('hello')]), 'a first raw data')
@@ -66,7 +66,7 @@ test('full cycle', async function (t) {
 test('partial message length', async function (t) {
   t.plan(8)
 
-  const [a, b] = create()
+  const [a, b] = await create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.from([11, 0]), 'a first raw data')
@@ -128,7 +128,7 @@ test('partial message length', async function (t) {
 test('delay message content', async function (t) {
   t.plan(7)
 
-  const [a, b] = create()
+  const [a, b] = await create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.from([11, 0, 0, 0]), 'a first raw data')
@@ -185,7 +185,7 @@ test('delay message content', async function (t) {
 test('delay partial message content', async function (t) {
   t.plan(7)
 
-  const [a, b] = create()
+  const [a, b] = await create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.concat([b4a.from([11, 0, 0, 0]), b4a.from('he')]), 'a first raw data')
@@ -242,7 +242,7 @@ test('delay partial message content', async function (t) {
 test('several partial message content', async function (t) {
   t.plan(8)
 
-  const [a, b] = create()
+  const [a, b] = await create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.from([11, 0, 0, 0]), 'a first raw data')
@@ -304,7 +304,7 @@ test('several partial message content', async function (t) {
 test('multiple messages at once', async function (t) {
   t.plan(8)
 
-  const [a, b] = create()
+  const [a, b] = await create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(
@@ -374,7 +374,7 @@ test('multiple messages at once', async function (t) {
 test('big message', async function (t) {
   t.plan(6)
 
-  const [a, b] = create()
+  const [a, b] = await create()
 
   const bigMessageLength = 2 * 1024 * 1024 // => 2097152
   const bigMessage = b4a.alloc(bigMessageLength).fill('abcd')
@@ -432,7 +432,7 @@ test('big message', async function (t) {
 test('write a string', async function (t) {
   t.plan(6)
 
-  const [a, b] = create()
+  const [a, b] = await create()
 
   a.rawStream.on('data', function (raw) {
     t.alike(raw, b4a.concat([b4a.from([5, 0, 0, 0]), b4a.from('hello')]), 'a first raw data')
@@ -475,7 +475,7 @@ test('write a string', async function (t) {
 test('end while the other stream is still receiving data', async function (t) {
   t.plan(5)
 
-  const [a, b] = create()
+  const [a, b] = await create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.concat([b4a.from([11, 0, 0, 0]), b4a.from('he')]), 'a first raw data')
@@ -530,7 +530,7 @@ test('end while the other stream is still receiving data', async function (t) {
 test('the receiving stream ends while still receiving data', async function (t) {
   t.plan(5)
 
-  const [a, b] = create()
+  const [a, b] = await create()
 
   a.rawStream.once('data', function (raw) {
     t.alike(raw, b4a.concat([b4a.from([11, 0, 0, 0]), b4a.from('he')]), 'a first raw data')
@@ -586,7 +586,7 @@ test('the receiving stream ends while still receiving data', async function (t) 
 test('destroy', function (t) {
   t.plan(3)
 
-  const [a, b] = create()
+  const [a, b] = await create()
 
   a.on('close', function () {
     t.pass('a closed')
@@ -606,7 +606,7 @@ test('destroy', function (t) {
 test('frame with 8 bits', async function (t) {
   t.plan(4)
 
-  const [a, b] = create({ bits: 8 })
+  const [a, b] = await create({ bits: 8 })
 
   const message = b4a.alloc(255).fill('abcd')
   a.write(message)
@@ -628,7 +628,7 @@ test('frame with 8 bits', async function (t) {
 test('try frame big message with 8 bits', async function (t) {
   t.plan(1)
 
-  const [a, b] = create({ bits: 8 })
+  const [a, b] = await create({ bits: 8 })
 
   const bigMessage = b4a.alloc(256).fill('abcd')
   a.write(bigMessage)
@@ -660,7 +660,7 @@ function frame (stream, data) {
   return wrap
 }
 
-function create (opts = {}) {
+async function create (opts = {}) {
   const pair = duplexThrough()
 
   const a = new FramedStream(pair[0], opts)
