@@ -383,14 +383,10 @@ test('big message', async function (t) {
 
   const [a, b] = await create()
 
-  const bigMessageLength = 2 * 1024 * 1024 // => 2097152
+  const bigMessageLength = 2 * 1024 * 1024
   const bigMessage = b4a.alloc(bigMessageLength).fill('abcd')
 
   a.rawStream.once('data', function (raw) {
-    /* const frameLength = readUInt32LE(raw.slice(0, 4))
-    t.is(frameLength, bigMessageLength, 'frame message length')
-    t.is(raw.length - 4, bigMessageLength, 'first raw data message length') */
-
     t.alike(raw, b4a.concat([b4a.from([0, 0, 32, 0]), bigMessage]), 'a first raw data')
 
     a.rawStream.once('data', function () {
