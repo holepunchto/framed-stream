@@ -632,6 +632,74 @@ test('frame with 8 bits', async function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
+test('frame with 16 bits', async function (t) {
+  t.plan(4)
+
+  const [a, b] = await create({ bits: 16 })
+
+  const message = b4a.alloc(65535).fill('abcd')
+  a.write(message)
+
+  b.rawStream.on('data', function (raw) {
+    t.alike(raw, b4a.concat([b4a.from([255, 255]), message]), 'a first raw data')
+  })
+
+  b.on('data', function (data) {
+    t.alike(data, message)
+    a.end()
+  })
+
+  b.on('end', () => b.end())
+  a.on('close', () => t.pass('a closed'))
+  b.on('close', () => t.pass('b closed'))
+})
+
+test('frame with 24 bits', async function (t) {
+  t.plan(4)
+
+  const [a, b] = await create({ bits: 24 })
+
+  const message = b4a.alloc(16777215).fill('abcd')
+  a.write(message)
+
+  b.rawStream.on('data', function (raw) {
+    t.alike(raw, b4a.concat([b4a.from([255, 255, 255]), message]), 'a first raw data')
+  })
+
+  b.on('data', function (data) {
+    t.alike(data, message)
+    a.end()
+  })
+
+  b.on('end', () => b.end())
+  a.on('close', () => t.pass('a closed'))
+  b.on('close', () => t.pass('b closed'))
+})
+
+test('frame with 32 bits', async function (t) {
+  t.plan(5)
+
+  const [a, b] = await create({ bits: 32 })
+
+  const message = b4a.alloc(4294967295 - 4).fill('abcd')
+  a.write(message)
+
+  b.rawStream.on('data', function (raw) {
+    t.alike(raw.slice(0, 4), b4a.from([255, 255, 255, 255]), 'a first raw data (length)')
+    t.is(raw.slice(4).compare(message), 0, 'a first raw data (message)')
+    // t.alike(raw, b4a.concat([b4a.from([255, 255, 255, 255]), message]), 'a first raw data')
+  })
+
+  b.on('data', function (data) {
+    t.alike(data, message)
+    a.end()
+  })
+
+  b.on('end', () => b.end())
+  a.on('close', () => t.pass('a closed'))
+  b.on('close', () => t.pass('b closed'))
+})
+
 test('try frame big message with 8 bits', async function (t) {
   t.plan(1)
 
