@@ -755,10 +755,10 @@ test('close event if raw stream is destroyed', function (t) {
   b.rawStream.destroy()
 })
 
-test('forward errors when both sides are destroyed', async function (t) {
+test('forward errors when both sides are destroyed', function (t) {
   t.plan(8)
 
-  const [a, b] = await create()
+  const [a, b] = create()
 
   const errorA = new Error('error-a')
   const errorB = new Error('error-b')
@@ -778,10 +778,10 @@ test('forward errors when both sides are destroyed', async function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
-test('forward errors when one side is destroyed', async function (t) {
+test('forward errors when one side is destroyed', function (t) {
   t.plan(8)
 
-  const [a, b] = await create()
+  const [a, b] = create()
 
   const errorA = new Error('error-a')
   a.destroy(errorA)
