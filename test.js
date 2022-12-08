@@ -755,6 +755,29 @@ test('close event if raw stream is destroyed', function (t) {
   b.rawStream.destroy()
 })
 
+test('forward errors when both sides are destroyed', async function (t) {
+  t.plan(8)
+
+  const [a, b] = await create()
+
+  const errorA = new Error('error-a')
+  const errorB = new Error('error-b')
+  a.destroy(errorA)
+  b.destroy(errorB)
+
+  a.rawStream.on('error', (err) => t.is(err, errorA, 'a rawStream: ' + err.message))
+  b.rawStream.on('error', (err) => t.is(err.message, 'Pair was destroyed', 'b rawStream: ' + err.message))
+
+  a.on('error', (err) => t.is(err, errorA, 'a error: ' + err.message))
+  b.on('error', (err) => t.is(err, errorB, 'b error: ' + err.message))
+
+  a.rawStream.on('close', () => t.pass('a rawStream closed'))
+  b.rawStream.on('close', () => t.pass('b rawStream closed'))
+
+  a.on('close', () => t.pass('a closed'))
+  b.on('close', () => t.pass('b closed'))
+})
+
 function frame (stream, data) {
   let len = data.byteLength
   const wrap = b4a.allocUnsafe(len + stream.frameBytes)
