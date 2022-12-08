@@ -739,6 +739,22 @@ test('drains data after both streams end', function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
+test('close event if raw stream is destroyed', function (t) {
+  t.plan(5)
+
+  const [a, b] = create()
+
+  a.rawStream.on('close', () => t.pass('a rawStream closed'))
+  b.rawStream.on('close', () => t.pass('b rawStream closed'))
+
+  a.on('error', (err) => t.is(err.message, 'Pair was destroyed', err.message))
+
+  a.on('close', () => t.pass('a closed'))
+  b.on('close', () => t.pass('b closed'))
+
+  b.rawStream.destroy()
+})
+
 function frame (stream, data) {
   let len = data.byteLength
   const wrap = b4a.allocUnsafe(len + stream.frameBytes)
