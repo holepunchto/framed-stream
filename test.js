@@ -586,7 +586,7 @@ test('destroy', function (t) {
     t.pass('a closed')
   })
 
-  b.on('close', function () { // Note: this is *not* emitted using net
+  b.on('close', function () {
     t.pass('b closed')
   })
 
