@@ -586,7 +586,7 @@ test('destroy', function (t) {
     t.pass('a closed')
   })
 
-  b.on('close', function () { // Note: this is *not* emitted using net
+  b.on('close', function () {
     t.pass('b closed')
   })
 
@@ -717,6 +717,42 @@ test('try create stream with invalid frame bits', function (t) {
   } catch (error) {
     t.is(error.message, 'Frame bits is invalid')
   }
+})
+
+test('drains data after both streams end', function (t) {
+  t.plan(4)
+
+  const [a, b] = create()
+
+  a.end()
+  b.end(b4a.from('hello'))
+
+  a.rawStream.on('data', function (raw) {
+    t.alike(raw, b4a.concat([b4a.from([5, 0, 0, 0]), b4a.from('hello')]), 'a first raw data')
+  })
+
+  a.on('data', function (data) {
+    t.alike(data, b4a.from('hello'))
+  })
+
+  a.on('close', () => t.pass('a closed'))
+  b.on('close', () => t.pass('b closed'))
+})
+
+test('close event if raw stream is destroyed', function (t) {
+  t.plan(5)
+
+  const [a, b] = create()
+
+  a.rawStream.on('close', () => t.pass('a rawStream closed'))
+  b.rawStream.on('close', () => t.pass('b rawStream closed'))
+
+  a.on('error', (err) => t.is(err.message, 'Pair was destroyed', err.message))
+
+  a.on('close', () => t.pass('a closed'))
+  b.on('close', () => t.pass('b closed'))
+
+  b.rawStream.destroy()
 })
 
 function frame (stream, data) {
