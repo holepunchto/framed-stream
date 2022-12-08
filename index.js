@@ -99,7 +99,7 @@ module.exports = class FramedStream extends Duplex {
       this._message.set(chunk, this._message.byteLength - this._missingBytes)
 
       if (read > data.byteLength) {
-        this._missingBytes -= chunk.byteLength
+        this._missingBytes -= chunk.length
         return
       }
 
