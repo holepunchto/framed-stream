@@ -26,9 +26,9 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _predestroy () {
-    const err = new Error('Destroyed')
-    this.rawStream.destroy(err)
-    this._maybeContinue(err)
+    this.rawStream.destroy(this._readableState.error || this._writableState.error)
+
+    this._maybeContinue(new Error('Stream destroyed'))
   }
 
   _read (cb) {
