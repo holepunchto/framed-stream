@@ -16,11 +16,13 @@ module.exports = class FramedStream extends Duplex {
     this._missingBytes = 0
     this._message = null
     this._writeCallback = null
+    this._ended = 2
 
     rawStream.on('data', this._ondata.bind(this))
     rawStream.on('end', this._onend.bind(this))
     rawStream.on('drain', this._ondrain.bind(this))
     rawStream.on('error', this._onerror.bind(this))
+    rawStream.on('close', this._onclose.bind(this))
   }
 
   _predestroy () {
@@ -59,6 +61,10 @@ module.exports = class FramedStream extends Duplex {
     }
 
     return wrap
+  }
+
+  _onclose () {
+    if (this._ended !== 0) this.destroy()
   }
 
   _ondrain () {
@@ -116,10 +122,12 @@ module.exports = class FramedStream extends Duplex {
       return
     }
 
+    this._ended--
     this.push(null)
   }
 
   _final (cb) {
+    this._ended--
     this.rawStream.end()
     cb(null)
   }
