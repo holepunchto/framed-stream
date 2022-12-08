@@ -719,6 +719,26 @@ test('try create stream with invalid frame bits', function (t) {
   }
 })
 
+test('drains data after both streams end', function (t) {
+  t.plan(4)
+
+  const [a, b] = create()
+
+  a.end()
+  b.end(b4a.from('hello'))
+
+  a.rawStream.on('data', function (raw) {
+    t.alike(raw, b4a.concat([b4a.from([5, 0, 0, 0]), b4a.from('hello')]), 'a first raw data')
+  })
+
+  a.on('data', function (data) {
+    t.alike(data, b4a.from('hello'))
+  })
+
+  a.on('close', () => t.pass('a closed'))
+  b.on('close', () => t.pass('b closed'))
+})
+
 function frame (stream, data) {
   let len = data.byteLength
   const wrap = b4a.allocUnsafe(len + stream.frameBytes)
