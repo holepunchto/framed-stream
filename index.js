@@ -1,4 +1,4 @@
-const { Duplex } = require('streamx')
+const { Duplex, getStreamError } = require('streamx')
 const b4a = require('b4a')
 
 module.exports = class FramedStream extends Duplex {
@@ -26,7 +26,7 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _predestroy () {
-    this.rawStream.destroy(this._readableState.error || this._writableState.error)
+    this.rawStream.destroy(getStreamError(this))
 
     this._maybeContinue(new Error('Stream destroyed'))
   }
