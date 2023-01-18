@@ -799,6 +799,21 @@ test('forward errors when one side is destroyed', function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
+
+test.solo('stream.write callback is called after write', function (t) {
+  t.plan(1)
+
+  const [a] = create()
+  const message = frame(a, b4a.from('hello'))
+  const tm = setTimeout(() => { t.fail('write function should be called')})
+  a.write(message, () => {
+    t.pass('write function should be called')
+    clearTimeout(tm)
+  })
+})
+
+
+
 function frame (stream, data) {
   let len = data.byteLength
   const wrap = b4a.allocUnsafe(len + stream.frameBytes)
