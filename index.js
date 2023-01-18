@@ -40,7 +40,7 @@ module.exports = class FramedStream extends Duplex {
     const wrap = this._frame(data.byteLength)
     wrap.set(data, this.frameBytes)
 
-    if (this.rawStream.write(wrap) === true) return cb(null)
+    if (this.rawStream.write(wrap, this._afterwrite) === true) return cb(null)
     this._writeCallback = cb
   }
 

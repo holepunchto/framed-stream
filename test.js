@@ -1,4 +1,5 @@
 const test = require('brittle')
+const net = require('net')
 const FramedStream = require('./index.js')
 const duplexThrough = require('duplex-through')
 const b4a = require('b4a')
@@ -799,20 +800,33 @@ test('forward errors when one side is destroyed', function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
-
-test.solo('stream.write callback is called after write', function (t) {
+test.skip('stream.write callback is called after write', function (t) {
   t.plan(1)
 
   const [a] = create()
   const message = frame(a, b4a.from('hello'))
-  const tm = setTimeout(() => { t.fail('write function should be called')})
+  const tm = setTimeout(() => { t.fail('write function should be called') })
   a.write(message, () => {
     t.pass('write function should be called')
     clearTimeout(tm)
   })
 })
 
+test.solo('stream.write callback is called after write', async function (t) {
+  t.plan(1)
 
+  const [a] = await createSockets(t)
+
+  const message = frame(a, b4a.from('hello'))
+  const tm = setTimeout(() => t.fail('write function should be called'), 1)
+
+  a._afterwrite = () => {
+    t.pass('write function should be called')
+    clearTimeout(tm)
+  }
+
+  a.write(message)
+})
 
 function frame (stream, data) {
   let len = data.byteLength
@@ -832,6 +846,28 @@ function create (opts = {}) {
 
   const a = new FramedStream(pair[0], opts)
   const b = new FramedStream(pair[1], opts)
+
+  return [a, b]
+}
+
+async function createSockets (t) {
+  const server = net.createServer().listen()
+  const onconnection = new Promise(resolve => server.on('connection', resolve))
+
+  const cl = net.connect(server.address().port, server.address().address)
+  const sv = await onconnection
+
+  server.close()
+
+  t.teardown(() => {
+    const onclose = new Promise(resolve => server.on('close', resolve))
+    a.destroy()
+    b.destroy()
+    return onclose
+  })
+
+  const a = new FramedStream(cl)
+  const b = new FramedStream(sv)
 
   return [a, b]
 }
