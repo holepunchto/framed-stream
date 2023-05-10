@@ -1,5 +1,5 @@
 {
-  "name": "framed-stream",
+  "name": "@holepunchto/framed-stream",
   "version": "1.0.1",
   "description": "Read/write stream messages prefixed 8, 16, 24 or 32 bit length",
   "main": "index.js",
