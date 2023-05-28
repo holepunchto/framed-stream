@@ -69,4 +69,4 @@ Indicates the frame bytes (`1`, `2`, `3`, or `4`).
 Indicates the max message length (`255`, `65535`, `16777215`, or `4294967295`).
 
 ## License
-MIT
+Apache-2.0
