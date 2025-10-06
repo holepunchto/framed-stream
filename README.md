@@ -19,9 +19,7 @@ const server = net.createServer().listen(3000)
 server.on('connection', function (socket) {
   const stream = new FramedStream(socket)
 
-  stream.on('data', (message) =>
-    console.log('client says:', message.toString())
-  )
+  stream.on('data', (message) => console.log('client says:', message.toString()))
   stream.on('end', () => stream.end())
   stream.on('close', (message) => console.log('server stream is closed'))
 })

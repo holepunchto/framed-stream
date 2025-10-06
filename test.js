@@ -9,18 +9,10 @@ test('full cycle', function (t) {
   const [a, b] = create()
 
   a.rawStream.once('data', function (raw) {
-    t.alike(
-      raw,
-      b4a.concat([b4a.from([5, 0, 0, 0]), b4a.from('hello')]),
-      'a first raw data'
-    )
+    t.alike(raw, b4a.concat([b4a.from([5, 0, 0, 0]), b4a.from('hello')]), 'a first raw data')
 
     a.rawStream.once('data', function (raw) {
-      t.alike(
-        raw,
-        b4a.concat([b4a.from([6, 0, 0, 0]), b4a.from('world!')]),
-        'a second raw data'
-      )
+      t.alike(raw, b4a.concat([b4a.from([6, 0, 0, 0]), b4a.from('world!')]), 'a second raw data')
 
       a.rawStream.once('data', function () {
         t.fail('a should not receive more raw data')
@@ -196,11 +188,7 @@ test('delay partial message content', function (t) {
   const [a, b] = create()
 
   a.rawStream.once('data', function (raw) {
-    t.alike(
-      raw,
-      b4a.concat([b4a.from([11, 0, 0, 0]), b4a.from('he')]),
-      'a first raw data'
-    )
+    t.alike(raw, b4a.concat([b4a.from([11, 0, 0, 0]), b4a.from('he')]), 'a first raw data')
 
     a.rawStream.once('data', function (raw) {
       t.alike(raw, b4a.from('llo world'), 'a second raw data')
@@ -395,11 +383,7 @@ test('big message', function (t) {
   const bigMessage = b4a.alloc(bigMessageLength).fill('abcd')
 
   a.rawStream.once('data', function (raw) {
-    t.alike(
-      raw,
-      b4a.concat([b4a.from([0, 0, 32, 0]), bigMessage]),
-      'a first raw data'
-    )
+    t.alike(raw, b4a.concat([b4a.from([0, 0, 32, 0]), bigMessage]), 'a first raw data')
 
     a.rawStream.once('data', function () {
       t.fail('a should not receive more raw data')
@@ -450,11 +434,7 @@ test('write a string', function (t) {
   const [a, b] = create()
 
   a.rawStream.on('data', function (raw) {
-    t.alike(
-      raw,
-      b4a.concat([b4a.from([5, 0, 0, 0]), b4a.from('hello')]),
-      'a first raw data'
-    )
+    t.alike(raw, b4a.concat([b4a.from([5, 0, 0, 0]), b4a.from('hello')]), 'a first raw data')
   })
 
   b.rawStream.on('data', function () {
@@ -497,11 +477,7 @@ test('end while the other stream is still receiving data', function (t) {
   const [a, b] = create()
 
   a.rawStream.once('data', function (raw) {
-    t.alike(
-      raw,
-      b4a.concat([b4a.from([11, 0, 0, 0]), b4a.from('he')]),
-      'a first raw data'
-    )
+    t.alike(raw, b4a.concat([b4a.from([11, 0, 0, 0]), b4a.from('he')]), 'a first raw data')
 
     a.rawStream.once('data', function () {
       t.fail('a should not receive more raw data')
@@ -556,11 +532,7 @@ test('the receiving stream ends while still receiving data', function (t) {
   const [a, b] = create()
 
   a.rawStream.once('data', function (raw) {
-    t.alike(
-      raw,
-      b4a.concat([b4a.from([11, 0, 0, 0]), b4a.from('he')]),
-      'a first raw data'
-    )
+    t.alike(raw, b4a.concat([b4a.from([11, 0, 0, 0]), b4a.from('he')]), 'a first raw data')
 
     a.rawStream.once('data', function () {
       t.fail('a should not receive more raw data')
@@ -661,11 +633,7 @@ test('frame with 16 bits (message of 65 kb)', function (t) {
   a.write(message)
 
   b.rawStream.on('data', function (raw) {
-    t.alike(
-      raw,
-      b4a.concat([b4a.from([255, 255]), message]),
-      'a first raw data'
-    )
+    t.alike(raw, b4a.concat([b4a.from([255, 255]), message]), 'a first raw data')
   })
 
   b.on('data', function (data) {
@@ -687,11 +655,7 @@ test('frame with 24 bits (message of 16 mb)', function (t) {
   a.write(message)
 
   b.rawStream.on('data', function (raw) {
-    t.alike(
-      raw,
-      b4a.concat([b4a.from([255, 255, 255]), message]),
-      'a first raw data'
-    )
+    t.alike(raw, b4a.concat([b4a.from([255, 255, 255]), message]), 'a first raw data')
   })
 
   b.on('data', function (data) {
@@ -713,11 +677,7 @@ test.skip('frame with 32 bits (message of 4 gb)', function (t) {
   a.write(message)
 
   b.rawStream.on('data', function (raw) {
-    t.alike(
-      raw.slice(0, 4),
-      b4a.from([251, 255, 255, 255]),
-      'a first raw data (length)'
-    )
+    t.alike(raw.slice(0, 4), b4a.from([251, 255, 255, 255]), 'a first raw data (length)')
     t.is(raw.slice(4).compare(message), 0, 'a first raw data (message)')
   })
 
@@ -777,11 +737,7 @@ test('drains data after both streams end', function (t) {
   b.end(b4a.from('hello'))
 
   a.rawStream.on('data', function (raw) {
-    t.alike(
-      raw,
-      b4a.concat([b4a.from([5, 0, 0, 0]), b4a.from('hello')]),
-      'a first raw data'
-    )
+    t.alike(raw, b4a.concat([b4a.from([5, 0, 0, 0]), b4a.from('hello')]), 'a first raw data')
   })
 
   a.on('data', function (data) {
@@ -818,9 +774,7 @@ test('forward errors when both sides are destroyed', function (t) {
   a.destroy(errorA)
   b.destroy(errorB)
 
-  a.rawStream.on('error', (err) =>
-    t.is(err, errorA, 'a rawStream: ' + err.message)
-  )
+  a.rawStream.on('error', (err) => t.is(err, errorA, 'a rawStream: ' + err.message))
   b.rawStream.on('error', (err) =>
     t.is(err.message, 'Pair was destroyed', 'b rawStream: ' + err.message)
   )
@@ -843,17 +797,13 @@ test('forward errors when one side is destroyed', function (t) {
   const errorA = new Error('error-a')
   a.destroy(errorA)
 
-  a.rawStream.on('error', (err) =>
-    t.is(err, errorA, 'a rawStream: ' + err.message)
-  )
+  a.rawStream.on('error', (err) => t.is(err, errorA, 'a rawStream: ' + err.message))
   b.rawStream.on('error', (err) =>
     t.is(err.message, 'Pair was destroyed', 'b rawStream: ' + err.message)
   )
 
   a.on('error', (err) => t.is(err, errorA, 'a error: ' + err.message))
-  b.on('error', (err) =>
-    t.is(err.message, 'Pair was destroyed', 'b error: ' + err.message)
-  )
+  b.on('error', (err) => t.is(err.message, 'Pair was destroyed', 'b error: ' + err.message))
 
   a.rawStream.on('close', () => t.pass('a rawStream closed'))
   b.rawStream.on('close', () => t.pass('b rawStream closed'))
