@@ -5,8 +5,9 @@ module.exports = class FramedStream extends Duplex {
   constructor(rawStream, { bits = 32 } = {}) {
     super({ mapWritable })
 
-    if (bits !== 32 && bits !== 24 && bits !== 16 && bits !== 8)
+    if (bits !== 32 && bits !== 24 && bits !== 16 && bits !== 8) {
       throw new Error('Frame bits is invalid')
+    }
 
     this.rawStream = rawStream
     this.frameBits = bits
@@ -52,10 +53,11 @@ module.exports = class FramedStream extends Duplex {
   }
 
   _frame(len) {
-    if (len > this.maxMessageLength)
+    if (len > this.maxMessageLength) {
       throw new Error(
         'Message length (' + len + ') is longer than max frame (' + this.maxMessageLength + ')'
       )
+    }
 
     const wrap = b4a.allocUnsafe(len + this.frameBytes)
 
