@@ -1,4 +1,5 @@
 const test = require('brittle')
+const process = require('process')
 const FramedStream = require('./index.js')
 const duplexThrough = require('duplex-through')
 const b4a = require('b4a')
