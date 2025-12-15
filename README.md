@@ -7,7 +7,9 @@ npm i framed-stream
 ```
 
 ## Usage
+
 We have a server that handles connections like so:
+
 ```js
 const FramedStream = require('framed-stream')
 const net = require('net')
@@ -24,6 +26,7 @@ server.on('connection', function (socket) {
 ```
 
 Client does the same, also for example it sends two messages:
+
 ```js
 const client = net.connect(3000)
 const stream = new FramedStream(client)
@@ -44,6 +47,7 @@ stream.end()
 Make a new framed stream.
 
 Available `options`:
+
 ```js
 {
   bits: 32
@@ -69,4 +73,5 @@ Indicates the frame bytes (`1`, `2`, `3`, or `4`).
 Indicates the max message length (`255`, `65535`, `16777215`, or `4294967295`).
 
 ## License
+
 Apache-2.0

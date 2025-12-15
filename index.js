@@ -2,10 +2,12 @@ const { Duplex, getStreamError } = require('streamx')
 const b4a = require('b4a')
 
 module.exports = class FramedStream extends Duplex {
-  constructor (rawStream, { bits = 32 } = {}) {
+  constructor(rawStream, { bits = 32 } = {}) {
     super({ mapWritable })
 
-    if (bits !== 32 && bits !== 24 && bits !== 16 && bits !== 8) throw new Error('Frame bits is invalid')
+    if (bits !== 32 && bits !== 24 && bits !== 16 && bits !== 8) {
+      throw new Error('Frame bits is invalid')
+    }
 
     this.rawStream = rawStream
     this.frameBits = bits
@@ -25,18 +27,18 @@ module.exports = class FramedStream extends Duplex {
     rawStream.on('close', this._onclose.bind(this))
   }
 
-  _predestroy () {
+  _predestroy() {
     this.rawStream.destroy(getStreamError(this))
 
     this._maybeContinue(new Error('Stream destroyed'))
   }
 
-  _read (cb) {
+  _read(cb) {
     this.rawStream.resume() // restart state machine
     cb(null)
   }
 
-  _write (data, cb) {
+  _write(data, cb) {
     const wrap = this._frame(data.byteLength)
     wrap.set(data, this.frameBytes)
 
@@ -44,14 +46,18 @@ module.exports = class FramedStream extends Duplex {
     this._writeCallback = cb
   }
 
-  _maybeContinue (err) {
+  _maybeContinue(err) {
     const cb = this._writeCallback
     this._writeCallback = null
     if (cb !== null) cb(err)
   }
 
-  _frame (len) {
-    if (len > this.maxMessageLength) throw new Error('Message length (' + len + ') is longer than max frame (' + this.maxMessageLength + ')')
+  _frame(len) {
+    if (len > this.maxMessageLength) {
+      throw new Error(
+        'Message length (' + len + ') is longer than max frame (' + this.maxMessageLength + ')'
+      )
+    }
 
     const wrap = b4a.allocUnsafe(len + this.frameBytes)
 
@@ -63,19 +69,19 @@ module.exports = class FramedStream extends Duplex {
     return wrap
   }
 
-  _onclose () {
+  _onclose() {
     if (this._ended !== 0) this.destroy()
   }
 
-  _ondrain () {
+  _ondrain() {
     this._maybeContinue(null)
   }
 
-  _onerror (err) {
+  _onerror(err) {
     this.destroy(err)
   }
 
-  _ondata (data) {
+  _ondata(data) {
     let read = 0
 
     while (read < data.byteLength && !this.destroying) {
@@ -85,9 +91,11 @@ module.exports = class FramedStream extends Duplex {
         this._factor += 8
 
         if (this._factor === this.frameBits) {
-          if (data.byteLength - read >= this._missingBytes) { // quick check if we can avoid a copy
-            this._push(data.subarray(read, read += this._missingBytes))
-          } else { // otherwise make a buffer to read into
+          if (data.byteLength - read >= this._missingBytes) {
+            // quick check if we can avoid a copy
+            this._push(data.subarray(read, (read += this._missingBytes)))
+          } else {
+            // otherwise make a buffer to read into
             this._message = b4a.allocUnsafe(this._missingBytes)
           }
         }
@@ -95,7 +103,7 @@ module.exports = class FramedStream extends Duplex {
         continue
       }
 
-      const chunk = data.subarray(read, read += this._missingBytes)
+      const chunk = data.subarray(read, (read += this._missingBytes))
       this._message.set(chunk, this._message.byteLength - this._missingBytes)
 
       if (read > data.byteLength) {
@@ -107,7 +115,7 @@ module.exports = class FramedStream extends Duplex {
     }
   }
 
-  _push (message) {
+  _push(message) {
     this._factor = 0
     this._missingBytes = 0
     this._message = null
@@ -116,7 +124,7 @@ module.exports = class FramedStream extends Duplex {
     if (this.push(message) === false) this.rawStream.pause()
   }
 
-  _onend () {
+  _onend() {
     if (this._factor) {
       this.destroy(new Error('Stream interrupted'))
       return
@@ -126,13 +134,13 @@ module.exports = class FramedStream extends Duplex {
     this.push(null)
   }
 
-  _final (cb) {
+  _final(cb) {
     this._ended--
     this.rawStream.end()
     cb(null)
   }
 }
 
-function mapWritable (s) {
+function mapWritable(s) {
   return typeof s === 'string' ? b4a.from(s) : s
 }

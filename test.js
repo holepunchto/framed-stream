@@ -1,4 +1,5 @@
 const test = require('brittle')
+const process = require('process')
 const FramedStream = require('./index.js')
 const duplexThrough = require('duplex-through')
 const b4a = require('b4a')
@@ -310,9 +311,12 @@ test('multiple messages at once', function (t) {
     t.alike(
       raw,
       b4a.concat([
-        b4a.from([5, 0, 0, 0]), b4a.from('hello'),
-        b4a.from([3, 0, 0, 0]), b4a.from('bye'),
-        b4a.from([6, 0, 0, 0]), b4a.from('random')
+        b4a.from([5, 0, 0, 0]),
+        b4a.from('hello'),
+        b4a.from([3, 0, 0, 0]),
+        b4a.from('bye'),
+        b4a.from([6, 0, 0, 0]),
+        b4a.from('random')
       ]),
       'a first raw data'
     )
@@ -513,7 +517,8 @@ test('end while the other stream is still receiving data', function (t) {
     t.pass('b closed')
   })
 
-  b.on('error', function (error) { // Note: this is *not* emitted using net
+  b.on('error', function (error) {
+    // Note: this is *not* emitted using net
     t.is(error.message, 'Pair was destroyed', 'b: ' + error.message)
   })
 
@@ -590,7 +595,8 @@ test('destroy', function (t) {
     t.pass('b closed')
   })
 
-  b.on('error', function (error) { // Note: this is *not* emitted using net
+  b.on('error', function (error) {
+    // Note: this is *not* emitted using net
     t.is(error.message, 'Pair was destroyed', 'b: ' + error.message)
   })
 
@@ -704,7 +710,11 @@ test('try frame big message with 8 bits', function (t) {
   b.on('close', () => t.fail('b should not emit close'))
 
   process.once('uncaughtException', function (error, origin) {
-    t.is(error.message, 'Message length (256) is longer than max frame (255)', origin + ': ' + error.message)
+    t.is(
+      error.message,
+      'Message length (256) is longer than max frame (255)',
+      origin + ': ' + error.message
+    )
   })
 })
 
@@ -766,7 +776,9 @@ test('forward errors when both sides are destroyed', function (t) {
   b.destroy(errorB)
 
   a.rawStream.on('error', (err) => t.is(err, errorA, 'a rawStream: ' + err.message))
-  b.rawStream.on('error', (err) => t.is(err.message, 'Pair was destroyed', 'b rawStream: ' + err.message))
+  b.rawStream.on('error', (err) =>
+    t.is(err.message, 'Pair was destroyed', 'b rawStream: ' + err.message)
+  )
 
   a.on('error', (err) => t.is(err, errorA, 'a error: ' + err.message))
   b.on('error', (err) => t.is(err, errorB, 'b error: ' + err.message))
@@ -787,7 +799,9 @@ test('forward errors when one side is destroyed', function (t) {
   a.destroy(errorA)
 
   a.rawStream.on('error', (err) => t.is(err, errorA, 'a rawStream: ' + err.message))
-  b.rawStream.on('error', (err) => t.is(err.message, 'Pair was destroyed', 'b rawStream: ' + err.message))
+  b.rawStream.on('error', (err) =>
+    t.is(err.message, 'Pair was destroyed', 'b rawStream: ' + err.message)
+  )
 
   a.on('error', (err) => t.is(err, errorA, 'a error: ' + err.message))
   b.on('error', (err) => t.is(err.message, 'Pair was destroyed', 'b error: ' + err.message))
@@ -799,7 +813,7 @@ test('forward errors when one side is destroyed', function (t) {
   b.on('close', () => t.pass('b closed'))
 })
 
-function frame (stream, data) {
+function frame(stream, data) {
   let len = data.byteLength
   const wrap = b4a.allocUnsafe(len + stream.frameBytes)
 
@@ -812,7 +826,7 @@ function frame (stream, data) {
   return wrap
 }
 
-function create (opts = {}) {
+function create(opts = {}) {
   const pair = duplexThrough()
 
   const a = new FramedStream(pair[0], opts)
