@@ -2,7 +2,17 @@
   "name": "framed-stream",
   "version": "1.0.1",
   "description": "Read/write stream messages prefixed 8, 16, 24 or 32 bit length",
-  "main": "index.js",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./package": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
   "scripts": {
     "format": "prettier --write .",
     "lint": "prettier --check . && lunte",
@@ -25,6 +35,7 @@
     "streamx": "^2.13.0"
   },
   "devDependencies": {
+    "@types/node": "^26.6.3",
     "brittle": "^3.1.1",
     "duplex-through": "^1.0.2",
     "lunte": "^1.0.0",
